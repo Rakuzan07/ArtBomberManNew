@@ -30,7 +30,6 @@ public class Gmanager {
 	public void updateAll() {
 		for (int i = 0; i < players.size(); i++) {
 			update(players.get(i));
-			System.out.println("ink tank" +players.get(i).getInkTank());
 		}
 	}
 

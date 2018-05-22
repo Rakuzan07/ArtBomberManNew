@@ -88,21 +88,25 @@ public class Player {
 	}
 	
 	public boolean placeBomb(Position p) {
-		/*if(inkTank>0) {
+		System.out.println(inkTank);
+		Position position=new Position(p.getX(),p.getY());
+		if(inkTank>0) {
 			boolean okInsert=true;
 			for(int i=0;i<bombPosition.size();i++){
-				if(bombPosition.get(i).equals(p))okInsert=false;
+				System.out.println(bombPosition.get(i)+"  "+position+"  "+bombPosition.get(i).equals(position));
+				if(bombPosition.get(i).equals(position))okInsert=false;
 			}
 			if(okInsert){
 				inkTank--;
-				bombPosition.add(p);
+				bombPosition.add(position);
 			}
 			return okInsert;
 		}
-		return false;*/
-	    boolean insert=bombPosition.contains(p);
+		return false;
+	    /*boolean insert=bombPosition.contains(p);
+	    System.out.println(p+"  "+insert);
 	    if(!insert) { bombPosition.add(p); inkTank--;}
-	    return !insert;
+	    return !insert;*/
 	}
 
 	public final boolean equals(Object arg0) {
