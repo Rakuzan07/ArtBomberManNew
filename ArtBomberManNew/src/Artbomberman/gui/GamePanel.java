@@ -20,7 +20,7 @@ public class GamePanel extends JPanel {
 
 	private static final int DIM_ASSET = 64;
 
-	private static final int INIT_WORLD_DIM = 13 , NUM_STEP=16 , SPEED=4 , IDLE=0;
+	private static final int INIT_WORLD_DIM = 13 , NUM_STEP=16 , SPEED=4 , IDLE=0 , EXPLOSION=500;
 
 	private ArrayList<Player> players;
 
@@ -34,7 +34,7 @@ public class GamePanel extends JPanel {
 	
 	private ArrayList<Integer> contAnimation=new ArrayList<Integer>();
 
-	private Image title, ground, ground1, ring1, ring2, ring3, ring4, ring5, editor, play;
+	private Image title, ground, groundGreen , groundRed , groundBlue , ring1, ring2, ring3, ring4, ring5, editor, play , bomb;
 
 	private ArrayList<Image> playerUp = new ArrayList<Image>();
 
@@ -68,15 +68,18 @@ public class GamePanel extends JPanel {
 		height = this.getHeight();
 		width = this.getWidth();
 		tk = Toolkit.getDefaultToolkit();
-		title = tk.getImage(this.getClass().getResource("resources//entry//xyz.png"));
-		ground = tk.getImage(this.getClass().getResource("resources//entry//ground_05.png"));
-		ground1 = tk.getImage(this.getClass().getResource("resources//entry//ground_06.png"));
+		title = tk.getImage(this.getClass().getResource("resources//entry//Titolo.png"));
+		ground = tk.getImage(this.getClass().getResource("resources//entry//ground_gray.png"));
+		groundGreen = tk.getImage(this.getClass().getResource("resources//entry//ground_green.png"));
+		groundBlue = tk.getImage(this.getClass().getResource("resources//entry//ground_blue.png"));
+		groundRed = tk.getImage(this.getClass().getResource("resources//entry//ground_red.png"));
 		ring1 = tk.getImage(this.getClass().getResource("resources//entry//ring1.png"));
 		ring2 = tk.getImage(this.getClass().getResource("resources//entry//ring2.png"));
 		ring3 = tk.getImage(this.getClass().getResource("resources//entry//ring3.png"));
 		ring4 = tk.getImage(this.getClass().getResource("resources//entry//ring4.png"));
 		ring5 = tk.getImage(this.getClass().getResource("resources//entry//ring5.png"));
 		editor = tk.getImage(this.getClass().getResource("resources//entry//editor.png"));
+		bomb= tk.getImage(this.getClass().getResource("resources//player//bomb.png"));
 		for (int i = 1; i < 4; i++) {
 			playerUp.add(tk.getImage(this.getClass().getResource("resources//player//player_" + i + ".png")));
 			playerDown.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (3 + i) + ".png")));
@@ -115,7 +118,16 @@ public class GamePanel extends JPanel {
 		for (int i = 0; i < world.getDimension(); i++) {
 			for (int j = 0; j < world.getDimension(); j++) {
 				if (world.getBlockMatrix()[i][j].getColor() == Color.GREY && !world.getBlockMatrix()[i][j].isPhysical())
-					g.drawImage(ground1, (j + shiftWidth / 64) * DIM_ASSET,
+					g.drawImage(ground, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.BLUE && !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(groundBlue, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.RED && !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(groundRed, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.GREEN && !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(groundGreen, (j + shiftWidth / 64) * DIM_ASSET,
 							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 			}
 		}
@@ -128,6 +140,13 @@ public class GamePanel extends JPanel {
 			gmanager.updateAll();
 		}
 		contUpdate=(contUpdate+1)%17;
+		for(int i=0;i<players.size();i++) {
+			ArrayList<Position> bombPosition=players.get(i).getBombPosition();
+			for(int j=0;j<bombPosition.size();j++) {
+				g.drawImage(bomb, ((bombPosition.get(j).getX())+ shiftWidth / DIM_ASSET)* DIM_ASSET,((int) (bombPosition.get(j).getY() + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+			}
+			gmanager.tryToExplodeAll(EXPLOSION);
+		}
 		drawPlayer(players.get(0), g , shiftHeight , shiftWidth);
 		drawPlayer(players.get(1), g , shiftHeight , shiftWidth);
 		drawPlayer(players.get(2), g , shiftHeight , shiftWidth);

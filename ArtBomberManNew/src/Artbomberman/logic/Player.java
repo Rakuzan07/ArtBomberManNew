@@ -56,6 +56,8 @@ public class Player {
 		return state;
 	}
 	
+	
+	
 	public void setState(Status state) {
 		this.state=state;
 	}
@@ -99,14 +101,33 @@ public class Player {
 			if(okInsert){
 				inkTank--;
 				bombPosition.add(position);
+				contBomb.add(0);
 			}
 			return okInsert;
 		}
 		return false;
-	    /*boolean insert=bombPosition.contains(p);
-	    System.out.println(p+"  "+insert);
-	    if(!insert) { bombPosition.add(p); inkTank--;}
-	    return !insert;*/
+	}
+	
+	public ArrayList<Integer> getContBomb() {
+		return contBomb;
+	}
+	
+	public void increaseContBomb() {
+		for(int i=0;i<contBomb.size();i++) {
+			contBomb.set(i, contBomb.get(i)+1);
+		}
+	}
+	
+	public ArrayList<Position> removeBomb(int cont) {
+		ArrayList<Position> tempPos=new ArrayList<Position>();
+		for(int i=0;i<bombPosition.size();) {
+			if(contBomb.get(i)>=cont) {
+				tempPos.add(bombPosition.remove(i));
+				contBomb.remove(i);
+			}
+			else return tempPos;
+		}
+		return tempPos;
 	}
 
 	public final boolean equals(Object arg0) {

@@ -27,6 +27,12 @@ public class Gmanager {
 		return players;
 	}
 
+	public void tryToExplodeAll(int cont) {
+		for(int i=0;i<players.size();i++) {
+			playersManager.get(i).tryExplosion(cont);
+		}
+	}
+	
 	public void updateAll() {
 		for (int i = 0; i < players.size(); i++) {
 			update(players.get(i));

@@ -9,7 +9,9 @@ public class PlayerManager {
 
 	private World world;
 
-	Player player;
+	private Player player;
+
+	private ArrayList<Position> bombPosition;
 
 	private static final int SHIFT = 5;
 
@@ -29,12 +31,11 @@ public class PlayerManager {
 
 	private int indexTarget, posxTarget, posyTarget;
 
-	private Random random = new Random();
-
 	public PlayerManager(Player player, World world) {
 		this.player = player;
 		this.players = world.getPlayers();
 		this.world = world;
+		this.bombPosition = player.getBombPosition();
 	}
 
 	public World getWorld() {
@@ -43,6 +44,20 @@ public class PlayerManager {
 
 	public ArrayList<Player> getPlayers() {
 		return players;
+	}
+
+	public void tryExplosion(int trigger) {
+		if (bombPosition.size() == 0)
+			return;
+		else {
+			player.increaseContBomb();
+			ArrayList<Position> bombToTrigger=player.removeBomb(trigger);
+			if(bombToTrigger.size()>0) {
+				for(int i=0;i<bombToTrigger.size();i++) {
+					world.paint(bombToTrigger.get(i), player.getColor());
+				}
+			}
+		}
 	}
 
 	public void update() {
@@ -66,34 +81,36 @@ public class PlayerManager {
 				}
 			}
 			inkFocussed = true;
-			if(tempPos!=null)way = chooseWay(player.getPosition(), tempPos);
+			if (tempPos != null)
+				way = chooseWay(player.getPosition(), tempPos);
 		} else if (player.getInkTank() == 0) {
-			if(tempPos==null) inkFocussed=false;
-			else{
+			if (way.size() == 0)
+				inkFocussed = false;
+			else {
 				tempPos = way.get(0);
-			if (player.getX() - tempPos.getX() > 0) {
-				player.moveLeft();
-				world.reloadTank(player);
-				inkFocussed = !(player.getInkTank() > 0);
-			} else if (player.getX() - tempPos.getX() < 0) {
-				player.moveRight();
-				world.reloadTank(player);
-				inkFocussed = !(player.getInkTank() > 0);
-			} else if (player.getY() - tempPos.getY() > 0) {
-				player.moveUp();
-				world.reloadTank(player);
-				inkFocussed = !(player.getInkTank() > 0);
-			} else if (player.getY() - tempPos.getY() < 0) {
-				player.moveDown();
-				world.reloadTank(player);
-				inkFocussed = !(player.getInkTank() > 0);
-			}
-			firstCheck = true;
-			if (player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY()))
-				way.remove(0);
+				if (player.getX() - tempPos.getX() > 0) {
+					player.moveLeft();
+					world.reloadTank(player);
+					inkFocussed = !(player.getInkTank() > 0);
+				} else if (player.getX() - tempPos.getX() < 0) {
+					player.moveRight();
+					world.reloadTank(player);
+					inkFocussed = !(player.getInkTank() > 0);
+				} else if (player.getY() - tempPos.getY() > 0) {
+					player.moveUp();
+					world.reloadTank(player);
+					inkFocussed = !(player.getInkTank() > 0);
+				} else if (player.getY() - tempPos.getY() < 0) {
+					player.moveDown();
+					world.reloadTank(player);
+					inkFocussed = !(player.getInkTank() > 0);
+				}
+				firstCheck = true;
+				if (player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY()))
+					way.remove(0);
 			}
 		}
-		if (!checkPosition&&player.getInkTank()>0) {
+		if (!checkPosition && player.getInkTank() > 0) {
 			for (int i = 0; i < world.getDimension(); i++) {
 				for (int j = 0; j < world.getDimension(); j++) {
 					if (world.getBlockMatrix()[i][j].getColor() != player.getColor()
@@ -119,14 +136,14 @@ public class PlayerManager {
 				}
 			}
 			way = chooseWay(player.getPosition(), tempPos);
-			String s="way ";
-			for(int i=0;i<way.size();i++) {
-				s=s+way.get(i)+" ";
+			String s = "way ";
+			for (int i = 0; i < way.size(); i++) {
+				s = s + way.get(i) + " ";
 			}
 			System.out.println(s);
 			checkPosition = true;
-			tempPos=way.get(0);
-		} else if (checkPosition&&player.getInkTank()>0) {
+			tempPos = way.get(0);
+		} else if (checkPosition && player.getInkTank() > 0) {
 			System.out.println(player.getPosition() + "  " + tempPos);
 			if (tempPos != null && player.getX() - tempPos.getX() > 0) {
 				player.moveLeft();
@@ -139,7 +156,7 @@ public class PlayerManager {
 			} else if (way.get(0) == null) {
 				checkPosition = false;
 				player.placeBomb(player.getPosition());
-				System.out.println(player.getBombPosition().size()+" "+player.getPosition());
+				System.out.println(player.getBombPosition().size() + " " + player.getPosition());
 			}
 			if (tempPos != null && player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY())) {
 				way.remove(0);
@@ -169,7 +186,7 @@ public class PlayerManager {
 			chooseWayRic(tempPosition.get(i), arrival, position);
 			if (position.get(position.size() - 1).equals(arrival))
 				return;
-			position.remove(position.size()-1);
+			position.remove(position.size() - 1);
 		}
 	}
 
