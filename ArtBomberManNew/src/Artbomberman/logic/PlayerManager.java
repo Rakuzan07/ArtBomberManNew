@@ -136,15 +136,9 @@ public class PlayerManager {
 				}
 			}
 			way = chooseWay(player.getPosition(), tempPos);
-			String s = "way ";
-			for (int i = 0; i < way.size(); i++) {
-				s = s + way.get(i) + " ";
-			}
-			System.out.println(s);
 			checkPosition = true;
 			tempPos = way.get(0);
 		} else if (checkPosition && player.getInkTank() > 0) {
-			System.out.println(player.getPosition() + "  " + tempPos);
 			if (tempPos != null && player.getX() - tempPos.getX() > 0) {
 				player.moveLeft();
 			} else if (tempPos != null && player.getX() - tempPos.getX() < 0) {
@@ -156,7 +150,6 @@ public class PlayerManager {
 			} else if (way.get(0) == null) {
 				checkPosition = false;
 				player.placeBomb(player.getPosition());
-				System.out.println(player.getBombPosition().size() + " " + player.getPosition());
 			}
 			if (tempPos != null && player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY())) {
 				way.remove(0);

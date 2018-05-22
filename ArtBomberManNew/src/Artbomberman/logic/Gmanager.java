@@ -19,6 +19,7 @@ public class Gmanager {
 		}
 	}
 
+
 	public World getWorld() {
 		return world;
 	}

@@ -36,13 +36,29 @@ public class GamePanel extends JPanel {
 
 	private Image title, ground, groundGreen , groundRed , groundBlue , ring1, ring2, ring3, ring4, ring5, editor, play , bomb;
 
-	private ArrayList<Image> playerUp = new ArrayList<Image>();
+	private ArrayList<Image> playerUpGreen = new ArrayList<Image>();
 
-	private ArrayList<Image> playerDown = new ArrayList<Image>();
+	private ArrayList<Image> playerDownGreen = new ArrayList<Image>();
 
-	private ArrayList<Image> playerLeft = new ArrayList<Image>();
+	private ArrayList<Image> playerLeftGreen = new ArrayList<Image>();
 
-	private ArrayList<Image> playerRight = new ArrayList<Image>();
+	private ArrayList<Image> playerRightGreen = new ArrayList<Image>();
+	
+	private ArrayList<Image> playerUpBlue = new ArrayList<Image>();
+
+	private ArrayList<Image> playerDownBlue = new ArrayList<Image>();
+
+	private ArrayList<Image> playerLeftBlue = new ArrayList<Image>();
+
+	private ArrayList<Image> playerRightBlue = new ArrayList<Image>();
+	
+	private ArrayList<Image> playerUpRed = new ArrayList<Image>();
+
+	private ArrayList<Image> playerDownRed = new ArrayList<Image>();
+
+	private ArrayList<Image> playerLeftRed = new ArrayList<Image>();
+
+	private ArrayList<Image> playerRightRed = new ArrayList<Image>();
 	
 	private ArrayList<Position> initPosition = new ArrayList<Position>();
 
@@ -62,7 +78,6 @@ public class GamePanel extends JPanel {
 		players.add(new Player(Color.BLUE, new Position(0, 0),Status.DOWN));
 		players.add(new Player(Color.GREEN, new Position(INIT_WORLD_DIM - 1, 0),Status.DOWN));
 		players.add(new Player(Color.RED, new Position(INIT_WORLD_DIM / 2, INIT_WORLD_DIM - 1),Status.UP));
-		System.out.println(players.get(0).getPosition()+" "+players.get(1).getPosition()+" "+players.get(2).getPosition());
 		world = new World(players, INIT_WORLD_DIM);
 		gmanager=new Gmanager(players,world);
 		height = this.getHeight();
@@ -81,10 +96,18 @@ public class GamePanel extends JPanel {
 		editor = tk.getImage(this.getClass().getResource("resources//entry//editor.png"));
 		bomb= tk.getImage(this.getClass().getResource("resources//player//bomb.png"));
 		for (int i = 1; i < 4; i++) {
-			playerUp.add(tk.getImage(this.getClass().getResource("resources//player//player_" + i + ".png")));
-			playerDown.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (3 + i) + ".png")));
-			playerRight.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (6 + i) + ".png")));
-			playerLeft.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (9 + i) + ".png")));
+			playerUpGreen.add(tk.getImage(this.getClass().getResource("resources//player//player_" + i + "green.png")));
+			playerDownGreen.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (3 + i) + "green.png")));
+			playerRightGreen.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (6 + i) + "green.png")));
+			playerLeftGreen.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (9 + i) + "green.png")));
+			playerUpBlue.add(tk.getImage(this.getClass().getResource("resources//player//player_" + i + "blue.png")));
+			playerDownBlue.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (3 + i) + "blue.png")));
+			playerRightBlue.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (6 + i) + "blue.png")));
+			playerLeftBlue.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (9 + i) + "blue.png")));
+			playerUpRed.add(tk.getImage(this.getClass().getResource("resources//player//player_" + i + "red.png")));
+			playerDownRed.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (3 + i) + "red.png")));
+			playerRightRed.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (6 + i) + "red.png")));
+			playerLeftRed.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (9 + i) + "red.png")));
 		}
 		play = tk.getImage(this.getClass().getResource("resources//entry//play.png"));
 		new Thread(new Sketcher()).start();
@@ -156,32 +179,55 @@ public class GamePanel extends JPanel {
 	private void drawPlayer(Player p , Graphics g , int localHeight , int localWidth) {
 		int posPlayer=players.indexOf(p);
 		if(initPosition.get(posPlayer).equals(p.getPosition())) {
-			if(p.getState()==Status.UP) g.drawImage(playerUp.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
-			if(p.getState()==Status.DOWN) g.drawImage(playerDown.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
-			if(p.getState()==Status.RIGHT) g.drawImage(playerRight.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
-			if(p.getState()==Status.LEFT) g.drawImage(playerLeft.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+			if(p.getState()==Status.UP) {
+				if(p.getColor()==Color.GREEN)g.drawImage(playerUpGreen.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerUpBlue.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerUpRed.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);}
+			if(p.getState()==Status.DOWN) {
+				if(p.getColor()==Color.GREEN)g.drawImage(playerDownGreen.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerDownBlue.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerDownRed.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+			}
+			if(p.getState()==Status.RIGHT) {
+				if(p.getColor()==Color.GREEN)g.drawImage(playerRightGreen.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerRightBlue.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerRightRed.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+			}
+			if(p.getState()==Status.LEFT) {
+				if(p.getColor()==Color.GREEN)g.drawImage(playerLeftGreen.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerLeftBlue.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerLeftRed.get(IDLE), (p.getX() + localWidth / 64) * DIM_ASSET,((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+			}
 		    contAnimation.set(posPlayer, 0);
 		}
 		else {
 			if(initPosition.get(posPlayer).getX()-p.getX()<0) {
 				p.setState(Status.RIGHT);
-				g.drawImage(playerRight.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)+contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
-				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRight.size()-1));
+				if(p.getColor()==Color.GREEN)g.drawImage(playerRightGreen.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)+contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerRightBlue.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)+contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerRightRed.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)+contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRightGreen.size()-1));
 			}
 			if(initPosition.get(posPlayer).getX()-p.getX()>0) {
 				p.setState(Status.LEFT);
-				g.drawImage(playerLeft.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)-contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
-				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRight.size()-1));
+				if(p.getColor()==Color.GREEN)g.drawImage(playerLeftGreen.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)-contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerLeftBlue.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)-contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerLeftRed.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET)-contUpdate*SPEED,((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
+				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRightGreen.size()-1));
 			}
 			if(initPosition.get(posPlayer).getY()-p.getY()<0) {
 				p.setState(Status.DOWN);
-				g.drawImage(playerDown.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)+contUpdate*SPEED, this);
-				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRight.size()-1));
+				if(p.getColor()==Color.GREEN)g.drawImage(playerDownGreen.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)+contUpdate*SPEED, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerDownBlue.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)+contUpdate*SPEED, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerDownRed.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)+contUpdate*SPEED, this);
+				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRightGreen.size()-1));
 			}
 			if(initPosition.get(posPlayer).getY()-p.getY()>0) {
 				p.setState(Status.UP);
-				g.drawImage(playerUp.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)-contUpdate*SPEED, this);
-				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRight.size()-1));
+				if(p.getColor()==Color.GREEN)g.drawImage(playerUpGreen.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)-contUpdate*SPEED, this);
+				if(p.getColor()==Color.BLUE)g.drawImage(playerUpBlue.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)-contUpdate*SPEED, this);
+				if(p.getColor()==Color.RED)g.drawImage(playerUpRed.get(contAnimation.get(posPlayer)+1), ((initPosition.get(posPlayer).getX() + localWidth / 64) * DIM_ASSET),(((int) (initPosition.get(posPlayer).getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET)-contUpdate*SPEED, this);
+				contAnimation.set(posPlayer, (contAnimation.get(posPlayer)+1)%(playerRightGreen.size()-1));
 			}
 		}
 	}

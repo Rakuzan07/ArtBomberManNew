@@ -90,12 +90,10 @@ public class Player {
 	}
 	
 	public boolean placeBomb(Position p) {
-		System.out.println(inkTank);
 		Position position=new Position(p.getX(),p.getY());
 		if(inkTank>0) {
 			boolean okInsert=true;
 			for(int i=0;i<bombPosition.size();i++){
-				System.out.println(bombPosition.get(i)+"  "+position+"  "+bombPosition.get(i).equals(position));
 				if(bombPosition.get(i).equals(position))okInsert=false;
 			}
 			if(okInsert){
