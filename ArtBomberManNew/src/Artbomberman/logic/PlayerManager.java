@@ -116,10 +116,10 @@ public class PlayerManager {
 					if (world.getBlockMatrix()[i][j].getColor() != player.getColor()
 							&& !world.getBlockMatrix()[i][j].isPhysical() && firstCheck) {
 						tempPos = new Position(j, i);
-						cont = world.checkMatrix(player.getColor(), i, j);
+						cont = world.checkMatrix(player.getColor(), j, i);
 						firstCheck = false;
 					} else if (world.getBlockMatrix()[i][j].getColor() != player.getColor()) {
-						double cont1 = world.checkMatrix(player.getColor(), i, j);
+						double cont1 = world.checkMatrix(player.getColor(), j, i);
 						if (cont < cont1) {
 							cont = cont1;
 							tempPos = new Position(j, i);
@@ -137,7 +137,7 @@ public class PlayerManager {
 			}
 			way = chooseWay(player.getPosition(), tempPos);
 			checkPosition = true;
-			tempPos = way.get(0);
+			if(way.size()!=0)tempPos = way.get(0);
 		} else if (checkPosition && player.getInkTank() > 0) {
 			if (tempPos != null && player.getX() - tempPos.getX() > 0) {
 				player.moveLeft();
@@ -147,11 +147,11 @@ public class PlayerManager {
 				player.moveUp();
 			} else if (tempPos != null && player.getY() - tempPos.getY() < 0) {
 				player.moveDown();
-			} else if (way.get(0) == null) {
+			} else if (way.size()!=0&&way.get(0) == null) {
 				checkPosition = false;
 				player.placeBomb(player.getPosition());
 			}
-			if (tempPos != null && player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY())) {
+			if (way.size()!=0&&tempPos != null && player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY())) {
 				way.remove(0);
 				way.add(way.size(), null);
 				tempPos = way.get(0);

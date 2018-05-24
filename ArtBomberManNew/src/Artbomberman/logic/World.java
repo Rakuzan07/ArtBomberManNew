@@ -155,7 +155,7 @@ public class World {
 	public double checkMatrix(Color color,int x, int y) {
 		int posPlayer=players.indexOf(new Player(color,new Position(0,0),Status.DOWN));
 		ArrayList<Position> bomb=players.get(posPlayer).getBombPosition();
-		double cont = -returncontBomb(bomb,y,x);
+		double cont = -returncontBomb(bomb,x,y);
 		if (blockMatrix[y][x].getColor() != color) {
 			if(!blockMatrix[y][x].isPhysical())cont++;
 			else cont=cont+1/3;}
@@ -195,6 +195,9 @@ public class World {
 				if(!posBombs.contains(tempPosition.get(j))) posBombs.add(tempPosition.get(j));
 			}
 		}
+		/*for(int i=0;i<posBombs.size();i++) {
+			System.out.print(posBombs.get(i));
+		}*/
 		return posBombs.size();
 	}
 	
@@ -202,15 +205,25 @@ public class World {
 		ArrayList<Position> tempPosition=new ArrayList<Position>();
 		int x=bomb.getX();
 		int y=bomb.getY();
+		/*System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+","+x+"> <ny,y>:<"+ny+","+y+">");
+		System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y-1)<=1)+" <nx,x>:<"+nx+","+x+"> <ny,y>:<"+ny+","+(y-1)+">");
+		System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y+1)<=1)+" <nx,x>:<"+nx+","+x+"> <ny,y>:<"+ny+","+(y+1)+">");
+		System.out.println((Math.abs(nx-x-1)<=1&&Math.abs(ny-y-1)<=1)+" <nx,x>:<"+nx+","+(x-1)+"> <ny,y>:<"+ny+","+(y-1)+">");
+		System.out.println((Math.abs(nx-x+1)<=1&&Math.abs(ny-y-1)<=1)+" <nx,x>:<"+nx+","+(x+1)+"> <ny,y>:<"+ny+","+(y-1)+">");
+		System.out.println((Math.abs(nx-x-1)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+","+(x-1)+"> <ny,y>:<"+ny+","+y+">");
+		System.out.println((Math.abs(nx-x+1)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+","+(x+1)+"> <ny,y>:<"+ny+","+y+">");
+		System.out.println((Math.abs(nx-x-1)<=1&&Math.abs(ny-y+1)<=1)+" <nx,x>:<"+nx+","+(x-1)+"> <ny,y>:<"+ny+","+(y+1)+">");
+		System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+","+x+"> <ny,y>:<"+ny+","+y+">");*/
+		
 		if(Math.abs(nx-x)<=1&&Math.abs(ny-y)<=1)tempPosition.add(new Position(x,y));
-		if (y - 1 >= 0 &&Math.abs(ny-y-1)<=1 && Math.abs(nx-x)<=1) tempPosition.add(new Position(x,y-1));
-		if (y + 1 < blockMatrix.length&&Math.abs(ny-y+1)<=1 && Math.abs(nx-x)<=1) tempPosition.add(new Position(x,y+1));
-		if (y - 1 >= 0 && x - 1 >= 0 && Math.abs(ny-y-1)<=1 && Math.abs(nx-x-1)<=1) tempPosition.add(new Position(x-1,y-1));
-		if (y - 1 >= 0 && x + 1 < blockMatrix.length && Math.abs(ny-y-1)<=1 && Math.abs(nx-x+1)<=1)tempPosition.add(new Position(x+1,y-1));
-		if (x - 1 >= 0 && Math.abs(ny-y)<=1 && Math.abs(nx-x-1)<=1) tempPosition.add(new Position(x-1,y));
-		if (x + 1 < blockMatrix.length && Math.abs(ny-y)<=1 && Math.abs(nx-x+1)<=1) tempPosition.add(new Position(x+1,y));
-		if (y + 1 < blockMatrix.length && x - 1 >= 0 && Math.abs(ny-y+1)<=1 && Math.abs(nx-x-1)<=1 ) tempPosition.add(new Position(x-1,y+1));
-		if (y + 1 < blockMatrix.length && x + 1 < blockMatrix.length && Math.abs(ny-y+1)<=1 && Math.abs(nx-x+1)<=1 ) tempPosition.add(new Position(x+1,y+1));
+		if (y - 1 >= 0 &&Math.abs(ny-(y-1))<=1 && Math.abs(nx-x)<=1) tempPosition.add(new Position(x,y-1));
+		if (y + 1 < blockMatrix.length&&Math.abs(ny-(y+1))<=1 && Math.abs(nx-x)<=1) tempPosition.add(new Position(x,y+1));
+		if (y - 1 >= 0 && x - 1 >= 0 && Math.abs(ny-(y-1))<=1 && Math.abs(nx-(x-1))<=1) tempPosition.add(new Position(x-1,y-1));
+		if (y - 1 >= 0 && x + 1 < blockMatrix.length && Math.abs(ny-(y-1))<=1 && Math.abs(nx-(x+1))<=1)tempPosition.add(new Position(x+1,y-1));
+		if (x - 1 >= 0 && Math.abs(ny-y)<=1 && Math.abs(nx-(x-1))<=1) tempPosition.add(new Position(x-1,y));
+		if (x + 1 < blockMatrix.length && Math.abs(ny-y)<=1 && Math.abs(nx-(x+1))<=1) tempPosition.add(new Position(x+1,y));
+		if (y + 1 < blockMatrix.length && x - 1 >= 0 && Math.abs(ny-(y+1))<=1 && Math.abs(nx-(x-1))<=1 ) tempPosition.add(new Position(x-1,y+1));
+		if (y + 1 < blockMatrix.length && x + 1 < blockMatrix.length && Math.abs(ny-(y+1))<=1 && Math.abs(nx-(x+1))<=1 ) tempPosition.add(new Position(x+1,y+1));
 		return tempPosition;
 	}
 	

@@ -3,6 +3,9 @@ package Artbomberman.gui;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -18,9 +21,9 @@ import Artbomberman.logic.Player.Status;
 
 public class GamePanel extends JPanel {
 
-	private static final int DIM_ASSET = 64;
+	private static final int DIM_ASSET = 64 ;
 
-	private static final int INIT_WORLD_DIM = 13 , NUM_STEP=16 , SPEED=4 , IDLE=0 , EXPLOSION=500;
+	private static final int INIT_WORLD_DIM = 13 , NUM_STEP=16 , SPEED=4 , IDLE=0 , EXPLOSION=32 , DEMO_SCREEN=0 , PLAY_SCREEN=1 , EDITOR_SCREEN=2;
 
 	private ArrayList<Player> players;
 
@@ -30,12 +33,16 @@ public class GamePanel extends JPanel {
 
 	private Toolkit tk;
 	
+	private int screenStatus;
+	
 	private int contUpdate=NUM_STEP-1 , contMovement=0;
 	
 	private ArrayList<Integer> contAnimation=new ArrayList<Integer>();
 
 	private Image title, ground, groundGreen , groundRed , groundBlue , ring1, ring2, ring3, ring4, ring5, editor, play , bomb;
 
+	private static final int SHIFT_PLAY=2 , SHIFT_EDITOR=3;
+	
 	private ArrayList<Image> playerUpGreen = new ArrayList<Image>();
 
 	private ArrayList<Image> playerDownGreen = new ArrayList<Image>();
@@ -68,6 +75,7 @@ public class GamePanel extends JPanel {
 
 	public GamePanel() {
 		super();
+		screenStatus=DEMO_SCREEN;
 		players = new ArrayList<Player>();
 		contAnimation.add(0);
 		contAnimation.add(0);
@@ -110,12 +118,34 @@ public class GamePanel extends JPanel {
 			playerLeftRed.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (9 + i) + "red.png")));
 		}
 		play = tk.getImage(this.getClass().getResource("resources//entry//play.png"));
+		this.setEventManager();
 		new Thread(new Sketcher()).start();
 	}
 
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		if(screenStatus==DEMO_SCREEN) {
 		paintEntryScreen(g);
+		}
+	}
+	
+	private void setEventManager() {
+		this.addMouseListener(new MouseAdapter() {
+
+			
+			public void mouseClicked(MouseEvent e) {
+				int x=e.getX();
+				int y=e.getY();
+				int playX=GamePanel.this.getWidth() - (play.getWidth(GamePanel.this) * SHIFT_PLAY);
+				int playY=play.getHeight(GamePanel.this) * SHIFT_PLAY;
+				int editorX=GamePanel.this.getWidth() - (play.getWidth(GamePanel.this) * SHIFT_PLAY);
+				int editorY=play.getHeight(GamePanel.this) * SHIFT_EDITOR;
+				if(x>=playX&&x<=(playX+play.getWidth(GamePanel.this))&&y>=playY&&y<=playY+play.getHeight(GamePanel.this))screenStatus=PLAY_SCREEN;
+				if(x>=editorX&&x<=(editorX+play.getWidth(GamePanel.this))&&y>=editorY&&y<=editorY+play.getHeight(GamePanel.this))screenStatus=EDITOR_SCREEN;
+			}
+
+			
+		});
 	}
 
 	private void paintEntryScreen(Graphics g) {
@@ -168,8 +198,8 @@ public class GamePanel extends JPanel {
 			for(int j=0;j<bombPosition.size();j++) {
 				g.drawImage(bomb, ((bombPosition.get(j).getX())+ shiftWidth / DIM_ASSET)* DIM_ASSET,((int) (bombPosition.get(j).getY() + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 			}
-			gmanager.tryToExplodeAll(EXPLOSION);
 		}
+		gmanager.tryToExplodeAll(EXPLOSION);
 		drawPlayer(players.get(0), g , shiftHeight , shiftWidth);
 		drawPlayer(players.get(1), g , shiftHeight , shiftWidth);
 		drawPlayer(players.get(2), g , shiftHeight , shiftWidth);
