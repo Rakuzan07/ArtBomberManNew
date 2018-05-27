@@ -3,6 +3,8 @@ package Artbomberman.logic;
 import java.util.ArrayList;
 import java.util.Random;
 
+import javax.swing.plaf.synth.SynthSpinnerUI;
+
 public class PlayerManager {
 
 	private ArrayList<Player> players;
@@ -17,7 +19,7 @@ public class PlayerManager {
 
 	private ArrayList<Integer> tempTarget = new ArrayList<Integer>();
 
-	private ArrayList<Position> way = new ArrayList<Position>();
+	private ArrayList<Position> way = new ArrayList<Position>(); //ARRAY DI POSIZIONI CHE IL NEMICO DEVE PERCORRERE
 
 	private Position tempPos = null;
 
@@ -46,22 +48,22 @@ public class PlayerManager {
 		return players;
 	}
 
-	public void tryExplosion(int trigger) {
+	public void tryExplosion(int trigger) { //TRIGGER SAREBBE IL VALORE 7 CHE FA ESPLODERE LE BOMBE
 		if (bombPosition.size() == 0)
 			return;
 		else {
-			player.increaseContBomb();
-			ArrayList<Position> bombToTrigger=player.removeBomb(trigger);
+			player.increaseContBomb(); //INCREMENTA I VALORI DELLE BOMBE
+			ArrayList<Position> bombToTrigger=player.removeBomb(trigger); //RIMUOVE QUELLE CON UN VALORE DEL CONT PARI AL TRIGGER
 			if(bombToTrigger.size()>0) {
 				for(int i=0;i<bombToTrigger.size();i++) {
-					world.paint(bombToTrigger.get(i), player.getColor());
+					world.paint(bombToTrigger.get(i), player.getColor()); //COLORA LE CASELLE DELLE BOMBE RIMOSSE DEL COLORE DEL GIOCATORE CHE LE AVEVA PIAZZATE
 				}
 			}
 		}
 	}
 
 	public void update() {
-		if (!inkFocussed && player.getInkTank() == 0) {
+		if (!inkFocussed && player.getInkTank() == 0) { //TROVARE IL PUNTO PIU' VICINO PER RIFORNIRSI 
 			for (int i = 0; i < world.getDimension(); i++) {
 				for (int j = 0; j < world.getDimension(); j++) {
 					if (!world.getBlockMatrix()[i][j].isPhysical()
@@ -80,8 +82,8 @@ public class PlayerManager {
 					}
 				}
 			}
-			inkFocussed = true;
-			if (tempPos != null)
+			inkFocussed = true;   //CI DICE CHE ABBIAMO TROVATO IL PUNTO MIGLIORE 
+			if (tempPos != null)   //TEMPPOS E' NULLO SE NON VI E' NESSUN PUNTO DEL NOSTRO STESSO COLORE
 				way = chooseWay(player.getPosition(), tempPos);
 		} else if (player.getInkTank() == 0) {
 			if (way.size() == 0)
@@ -163,11 +165,26 @@ public class PlayerManager {
 
 	private ArrayList<Position> chooseWay(Position departure, Position arrival) {
 		ArrayList<Position> empty = new ArrayList<Position>();
-		chooseWayRic(departure, arrival, empty);
+		ArrayList<Position> visited=new ArrayList<Position>();
+		chooseWayRic(departure, arrival, empty , visited);
+		ArrayList<Position> trimmedWay=trim(departure,empty);
+		if(trimmedWay!=null) empty=trimmedWay;
 		return empty;
 	}
+	
+	private ArrayList<Position> trim(Position departure , ArrayList<Position> way) {
+		int index=way.indexOf(departure);
+		if(index<0) return null;
+		ArrayList<Position> trimmedWay=new ArrayList<Position>();
+		for(int i=index+1;i<way.size();i++) {
+			trimmedWay.add(way.get(i));
+		}
+		return trimmedWay;
+	}
+	
 
-	private void chooseWayRic(Position departure, Position arrival, ArrayList<Position> position) {
+
+	private void chooseWayRic(Position departure, Position arrival, ArrayList<Position> position , ArrayList<Position> visited) {
 		if (arrival.equals(departure)) {
 			return;
 		}
@@ -175,11 +192,15 @@ public class PlayerManager {
 		World.fillWay(departure, arrival, world, tempPosition);
 		orderPosition(departure, arrival, tempPosition);
 		for (int i = 0; i < tempPosition.size(); i++) {
+			boolean isVisited=visited.contains(tempPosition.get(i));
+			if(!isVisited) {
+			visited.add(tempPosition.get(i));
 			position.add(tempPosition.get(i));
-			chooseWayRic(tempPosition.get(i), arrival, position);
+			chooseWayRic(tempPosition.get(i), arrival, position,visited);
 			if (position.get(position.size() - 1).equals(arrival))
 				return;
 			position.remove(position.size() - 1);
+			}
 		}
 	}
 

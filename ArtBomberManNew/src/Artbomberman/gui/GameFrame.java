@@ -34,6 +34,7 @@ public class GameFrame extends JFrame {
 		} catch (IOException e) {}
 		gamepanel=new GamePanel();
 		this.setContentPane(gamepanel);
+		this.addKeyListener(gamepanel);
 		this.gamepanel.setVisible(true);
 		this.setVisible(true);
 	}

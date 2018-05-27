@@ -1,7 +1,13 @@
 package Artbomberman.logic;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.StringTokenizer;
 
 public class Gmanager {
 
@@ -18,8 +24,8 @@ public class Gmanager {
 			playersManager.add(new PlayerManager(players.get(i), world));
 		}
 	}
-
-
+	
+	
 	public World getWorld() {
 		return world;
 	}
@@ -29,11 +35,11 @@ public class Gmanager {
 	}
 
 	public void tryToExplodeAll(int cont) {
-		for(int i=0;i<players.size();i++) {
+		for (int i = 0; i < players.size(); i++) {
 			playersManager.get(i).tryExplosion(cont);
 		}
 	}
-	
+
 	public void updateAll() {
 		for (int i = 0; i < players.size(); i++) {
 			update(players.get(i));
@@ -44,4 +50,9 @@ public class Gmanager {
 		int indexPlayer = players.indexOf(p);
 		playersManager.get(indexPlayer).update();
 	}
+
+	
+
+	
+	
 }

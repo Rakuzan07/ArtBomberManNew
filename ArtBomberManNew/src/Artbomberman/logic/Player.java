@@ -7,42 +7,42 @@ public class Player {
 
 	private static final int TANK_VALUE = 4;
 
-	private int inkTank, numBomb;
+	private int inkTank, numBomb;  //INKTANK NUMERO DI BOMBE UTILIZZABILI, NUMBOMB NUMERO MAX DI BOMBE UTILIZZABILI
 
 	private Color color;
 
 	private Position position;
 
-	private ArrayList<Position> bombPosition;
+	private ArrayList<Position> bombPosition; //ARRAY DI POSIZIONI DELLE BOMBE PER NON PIAZZARLE NELLA STESSA POSIZIONE
 
-	private ArrayList<Integer> contBomb;
+	private ArrayList<Integer> contBomb; //ARRAY DI CONT CORRISPONTENDI AD OGNI BOMBA PIAZZATA, QUANDO IL CONT DELLA BOMBA E' MAGG UGUALE A 7 LA BOMBA ESPLODE
 	
-	public enum Status{UP,DOWN,LEFT,RIGHT}
+	public enum Status{IDLE,UP,DOWN,LEFT,RIGHT} //UTILIZZATO PER GEST LE ANIMAZIONI
 	
 	private Status state;
 	
-	public Player(Color color, Position position,Status state) {
+	public Player(Color color, Position position) {
 		this.color = color;
 		this.numBomb = this.inkTank = TANK_VALUE;
 		this.position = new Position(position);
-		this.state=state;
+		this.state=Status.IDLE;
 		bombPosition = new ArrayList<>();
 		contBomb=new ArrayList<Integer>();
 	}
 
-	public Player(Color color, Position position, int inkTank,Status state) {
+	public Player(Color color, Position position, int inkTank) {
 		this.color = color;
 		this.numBomb = this.inkTank = inkTank;
 		this.position = new Position(position);
-		this.state=state;
+		this.state=Status.IDLE;
 		bombPosition = new ArrayList<>();
 		contBomb=new ArrayList<Integer>();
 	}
 
-	public Player(Player p,Status state) {
+	public Player(Player p) {
 		this.color = p.color;
 		this.numBomb = this.inkTank = p.inkTank;
-		this.state=state;
+		this.state=Status.IDLE;
 		this.position = new Position(p.position);
 		bombPosition = new ArrayList<>();
 		contBomb=new ArrayList<Integer>();
@@ -116,7 +116,7 @@ public class Player {
 		}
 	}
 	
-	public ArrayList<Position> removeBomb(int cont) {
+	public ArrayList<Position> removeBomb(int cont) {  //SE IL CONT DELLE BOMBE E' MAGGIORE DI 7 ELIMINA LE BOMBE PERCHE' ESPLOSE DALL'ARRAY DI POS E REST UN ARRAY CON LE POS DELLE BOMBE ESPLOSE PER RICOLORARE LE POSIZIONI
 		ArrayList<Position> tempPos=new ArrayList<Position>();
 		for(int i=0;i<bombPosition.size();) {
 			if(contBomb.get(i)>=cont) {

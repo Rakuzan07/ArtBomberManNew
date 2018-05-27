@@ -6,9 +6,9 @@ public class Block {
 	
 	private Color color;
 	
-	private int breakCont;
+	private int breakCont; //CONTATORE CHE CONTROLLA LO STATO DEL BLOCCO. SE IL CONT E' 0 IL BLOCCO VIENE DISTRUTTO
 	
-	private Color[] arrayColor;
+	private Color[] arrayColor; //ARRAY DI COLORI UTILIZZATO PER CAMBIARE IL COLORE AL BLOCCO UNA VOLTA COLPITO
 	
 	public Block(Color color) {
 		this.color=color;
@@ -22,7 +22,7 @@ public class Block {
 		arrayColor=Color.values();
 	}
 	
-	public boolean isPhysical() {
+	public boolean isPhysical() { //CAPIAMO SE IL BLOCCO E' ESISTENTE O MENO
 		return breakCont>0;
 	}
 	
@@ -30,8 +30,8 @@ public class Block {
 	public void repaint() {
 		Random random=new Random();
 		Color tempColor=color;
-		while(color.equals(tempColor)) {
-			int index=random.nextInt(arrayColor.length);
+		while(color.equals(tempColor)&&color==Color.GREY) {
+			int index=random.nextInt(arrayColor.length); //L'INDICE PUO' ASSUMERE VALORE COMPRESO TRA 0 E ARRAYCOLOR.LENGHT()-1
 			tempColor=arrayColor[index];
 		}
 		breakCont--;
