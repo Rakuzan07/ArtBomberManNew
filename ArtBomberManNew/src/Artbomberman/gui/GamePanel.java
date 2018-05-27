@@ -45,6 +45,8 @@ public class GamePanel extends JPanel implements KeyListener {
 	private int screenStatus, contSelectionBlock = 0, contBlock = 0;
 
 	private int contUpdate = NUM_STEP - 1, update = NUM_STEP - 1, contMovement = 0;
+	
+	private boolean isPressed=false;
 
 	private ArrayList<Integer> contAnimation = new ArrayList<Integer>();
 
@@ -53,7 +55,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
 	private static final int SHIFT_PLAY = 2, SHIFT_EDITOR = 3, TABLE_EDITOR = 7, BLUE = 0, GREEN = 1, RED = 2;
 
-	private static final int ENTER_KEY = 10, RIGHT_KEY = 39, LEFT_KEY = 37, UP_KEY = 38, DOWN_KEY = 40, ESC_KEY = 27;
+	private static final int ENTER_KEY = 10, RIGHT_KEY = 39, LEFT_KEY = 37, UP_KEY = 38, DOWN_KEY = 40, ESC_KEY = 27 , BOMB_KEY=32;
 
 	private ArrayList<Image> playerUpGreen = new ArrayList<Image>();
 
@@ -87,9 +89,8 @@ public class GamePanel extends JPanel implements KeyListener {
 
 	private ArrayList<Image> blocks = new ArrayList<Image>();
 
-	private double height, width;
 
-	private int keyPressed = 0, tickCount = 0;
+	private int keyPressed = 0, tickCount = 0 , contForRealPlayer=0;;
 
 	private boolean moved = false;
 
@@ -138,8 +139,6 @@ public class GamePanel extends JPanel implements KeyListener {
 		contAnimation.add(0);
 		contAnimation.add(0);
 		contAnimation.add(0);
-		height = this.getHeight();
-		width = this.getWidth();
 		tk = Toolkit.getDefaultToolkit();
 		title = tk.getImage(this.getClass().getResource("resources//entry//Titolo.png"));
 		ground = tk.getImage(this.getClass().getResource("resources//entry//ground_gray.png"));
@@ -532,7 +531,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		if (contUpdate == NUM_STEP) {
-			for (int i = 0; i < initPosition.size(); i++) {
+			for (int i = 0; i < initPosition.size()-1; i++) {
 				initPosition.set(i, new Position(players.get(i).getX(), players.get(i).getY()));
 			}
 			Gmanager.update(players.get(0));
@@ -546,10 +545,39 @@ public class GamePanel extends JPanel implements KeyListener {
 						((int) (bombPosition.get(j).getY() + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 			}
 		}
+		if(contForRealPlayer == NUM_STEP) {
+			initPosition.set(2, new Position(players.get(2).getX(),players.get(2).getY()));
+			isPressed=false;
+			contForRealPlayer=0;
+		}
+		if(isPressed)contForRealPlayer=(contForRealPlayer+1);
+		if(keyPressed==LEFT_KEY) {
+			Gmanager.tryToMoveLeft(players.get(2));
+			keyPressed=0;
+		}
+		if(keyPressed==RIGHT_KEY) {
+			Gmanager.tryToMoveRight(players.get(2));
+			keyPressed=0;
+		}
+		if(keyPressed==UP_KEY) {
+			Gmanager.tryToMoveUp(players.get(2));
+			keyPressed=0;
+		}
+		if(keyPressed==DOWN_KEY) {
+			Gmanager.tryToMoveDown(players.get(2));
+			keyPressed=0;
+		}
+		if(keyPressed==BOMB_KEY) {
+			players.get(2).placeBomb(players.get(2).getPosition());
+			keyPressed=0;
+			isPressed=false;
+		}
+		Gmanager.tryToReloadTank(players.get(2),initPosition.get(2));
+		System.out.println(players.get(2).getInkTank());
 		Gmanager.tryToExplodeAll(EXPLOSION);
-		drawPlayer(players.get(0), g, shiftHeight, shiftWidth, initPosition);
-		drawPlayer(players.get(1), g, shiftHeight , shiftWidth, initPosition);
-		drawPlayer(players.get(2), g, shiftHeight, shiftWidth, initPosition);
+		drawPlayer(players.get(0), g, shiftHeight, shiftWidth, initPosition,contUpdate);
+		drawPlayer(players.get(1), g, shiftHeight , shiftWidth, initPosition,contUpdate);
+		drawPlayer(players.get(2), g, shiftHeight, shiftWidth, initPosition,contForRealPlayer);
 	}
 
 	private void paintEntryScreen(Graphics g) {
@@ -609,14 +637,14 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		demoGmanager.tryToExplodeAll(EXPLOSION);
-		drawPlayer(demoPlayers.get(0), g, shiftHeight, shiftWidth, demoinitPosition);
-		drawPlayer(demoPlayers.get(1), g, shiftHeight, shiftWidth, demoinitPosition);
-		drawPlayer(demoPlayers.get(2), g, shiftHeight, shiftWidth, demoinitPosition);
+		drawPlayer(demoPlayers.get(0), g, shiftHeight, shiftWidth, demoinitPosition,contUpdate);
+		drawPlayer(demoPlayers.get(1), g, shiftHeight, shiftWidth, demoinitPosition,contUpdate);
+		drawPlayer(demoPlayers.get(2), g, shiftHeight, shiftWidth, demoinitPosition,contUpdate);
 		g.drawImage(title, midWidth - titleWidth / 2, 0, this);
 	}
 
 	private void drawPlayer(Player p, Graphics g, int localHeight, int localWidth,
-			ArrayList<Position> demoinitPosition) {
+			ArrayList<Position> demoinitPosition , int contUpdate) {
 		int posPlayer = demoPlayers.indexOf(p);
 		if (demoinitPosition.get(posPlayer).equals(p.getPosition())) {
 			if (p.getState() == Status.UP) {
@@ -824,6 +852,29 @@ public class GamePanel extends JPanel implements KeyListener {
 				tickCount = 0;
 				keyPressed = ESC_KEY;
 			}
+		}
+		else if(screenStatus == PLAY_SCREEN&&!isPressed) {
+			if (e.getKeyCode() == RIGHT_KEY) {
+					keyPressed = RIGHT_KEY;
+					isPressed=true;
+			}
+			if (e.getKeyCode() == LEFT_KEY) {
+				keyPressed = LEFT_KEY;
+				isPressed=true;
+		}
+			if (e.getKeyCode() == UP_KEY) {
+				keyPressed = UP_KEY;
+				isPressed=true;
+		}
+			if (e.getKeyCode() == DOWN_KEY) {
+				keyPressed = DOWN_KEY;
+				isPressed=true;
+		}
+			if(e.getKeyCode() == BOMB_KEY) {
+				keyPressed= BOMB_KEY;
+				isPressed=true;
+			}
+			
 		}
 	}
 

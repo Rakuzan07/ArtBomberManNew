@@ -61,6 +61,7 @@ public class PlayerManager {
 			}
 		}
 	}
+	
 
 	public void update() {
 		if (!inkFocussed && player.getInkTank() == 0) { //TROVARE IL PUNTO PIU' VICINO PER RIFORNIRSI 
@@ -219,6 +220,30 @@ public class PlayerManager {
 				}
 			}
 		}
+	}
+	
+	public void tryToMoveLeft() {
+		int x=player.getX();
+		int y=player.getY();
+		if (x-1>=0&&!world.getBlockMatrix()[x-1][y].isPhysical()) player.moveLeft();
+	}
+	
+	public void tryToMoveRight() {
+		int x=player.getX();
+		int y=player.getY();
+		if (x+1<world.getDimension()&&!world.getBlockMatrix()[x+1][y].isPhysical()) player.moveRight();
+	}
+	
+	public void tryToMoveUp() {
+		int x=player.getX();
+		int y=player.getY();
+		if(y-1>=0&&!world.getBlockMatrix()[x][y-1].isPhysical()) player.moveUp();
+	}
+	
+	public void tryToMoveDown() {
+		int x=player.getX();
+		int y=player.getY();
+		if (y+1<world.getDimension()&&!world.getBlockMatrix()[x][y+1].isPhysical()) player.moveDown();
 	}
 
 }
