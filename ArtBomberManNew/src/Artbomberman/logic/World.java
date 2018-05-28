@@ -19,7 +19,6 @@ public class World {
 
 	private static final int DIM_WORLD = 50;
 
-	private static final double VICTORY_PERCENTAGE = 0.4;
 
 	private int dimWorld;
 
@@ -149,17 +148,17 @@ public class World {
 			}
 	}
 
-	public boolean checkVictory(Player p) {
+	public double checkVictory(Player p) {
 		if (!players.contains(p))
 			throw new IllegalArgumentException("The player does not exist in this world");
-		int cont = 0;
+		double cont = 0;
 		for (int i = 0; i < dimWorld; i++) {
 			for (int j = 0; j < dimWorld; j++) {
-				if (blockMatrix[i][j].getColor() == p.getColor())
+				if (blockMatrix[i][j].getColor() == p.getColor()&&!blockMatrix[i][j].isPhysical())
 					cont++;
 			}
 		}
-		return ((double) cont / dimWorld) >= VICTORY_PERCENTAGE;
+		return ( cont / (dimWorld*dimWorld));
 	}
 
 	public double checkMatrix(Color color, int x, int y) { //RESTITUISCE UN DOUBLE CHE RAPPRESENTA L'EFFICACIA DELL'ESPLOSIONE DI UNA BOMBA IN UNA POSIZIONE
@@ -234,9 +233,6 @@ public class World {
 					posBombs.add(tempPosition.get(j));
 			}
 		}
-		/*
-		 * for(int i=0;i<posBombs.size();i++) { System.out.print(posBombs.get(i)); }
-		 */
 		return posBombs.size();
 	}
 
@@ -244,26 +240,6 @@ public class World {
 		ArrayList<Position> tempPosition = new ArrayList<Position>();
 		int x = bomb.getX();
 		int y = bomb.getY();
-		/*
-		 * System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+","+
-		 * x+"> <ny,y>:<"+ny+","+y+">");
-		 * System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y-1)<=1)+" <nx,x>:<"+nx+
-		 * ","+x+"> <ny,y>:<"+ny+","+(y-1)+">");
-		 * System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y+1)<=1)+" <nx,x>:<"+nx+
-		 * ","+x+"> <ny,y>:<"+ny+","+(y+1)+">");
-		 * System.out.println((Math.abs(nx-x-1)<=1&&Math.abs(ny-y-1)<=1)+" <nx,x>:<"+nx+
-		 * ","+(x-1)+"> <ny,y>:<"+ny+","+(y-1)+">");
-		 * System.out.println((Math.abs(nx-x+1)<=1&&Math.abs(ny-y-1)<=1)+" <nx,x>:<"+nx+
-		 * ","+(x+1)+"> <ny,y>:<"+ny+","+(y-1)+">");
-		 * System.out.println((Math.abs(nx-x-1)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+
-		 * ","+(x-1)+"> <ny,y>:<"+ny+","+y+">");
-		 * System.out.println((Math.abs(nx-x+1)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+
-		 * ","+(x+1)+"> <ny,y>:<"+ny+","+y+">");
-		 * System.out.println((Math.abs(nx-x-1)<=1&&Math.abs(ny-y+1)<=1)+" <nx,x>:<"+nx+
-		 * ","+(x-1)+"> <ny,y>:<"+ny+","+(y+1)+">");
-		 * System.out.println((Math.abs(nx-x)<=1&&Math.abs(ny-y)<=1)+" <nx,x>:<"+nx+","+
-		 * x+"> <ny,y>:<"+ny+","+y+">");
-		 */
 
 		if (Math.abs(nx - x) <= 1 && Math.abs(ny - y) <= 1)
 			tempPosition.add(new Position(x, y));
@@ -299,14 +275,6 @@ public class World {
 			tempPosition.add(new Position(x, y - 1));
 		if (y + 1 < world.getDimension() && world.getBlockMatrix()[y + 1][x].getBreakCont() == 0)
 			tempPosition.add(new Position(x, y + 1));
-		// if(x-1>=0&&y-1>=0&&world.getBlockMatrix()[y-1][x-1].getBreakCont()==0)
-		// tempPosition.add(new Position(x-1,y-1));
-		// if(x+1<world.getDimension()&&y-1>=0&&world.getBlockMatrix()[y-1][x+1].getBreakCont()==0)
-		// tempPosition.add(new Position(x+1,y-1));
-		// if(x-1>=0&&y+1<world.getDimension()&&world.getBlockMatrix()[y+1][x-1].getBreakCont()==0)
-		// tempPosition.add(new Position(x-1,y+1));
-		// if(x+1<world.getDimension()&&y+1<world.getDimension()&&world.getBlockMatrix()[y+1][x+1].getBreakCont()==0)
-		// tempPosition.add(new Position(x+1,y+1));
 	}
 
 	public void clear() {

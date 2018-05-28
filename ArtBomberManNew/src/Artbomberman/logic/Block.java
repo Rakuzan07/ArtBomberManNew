@@ -30,7 +30,7 @@ public class Block {
 	public void repaint() {
 		Random random=new Random();
 		Color tempColor=color;
-		while(color.equals(tempColor)&&color==Color.GREY) {
+		while(color.equals(tempColor)||tempColor==Color.GREY) {
 			int index=random.nextInt(arrayColor.length); //L'INDICE PUO' ASSUMERE VALORE COMPRESO TRA 0 E ARRAYCOLOR.LENGHT()-1
 			tempColor=arrayColor[index];
 		}

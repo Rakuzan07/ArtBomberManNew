@@ -16,6 +16,8 @@ public class Gmanager {
 	private World world;
 
 	private ArrayList<PlayerManager> playersManager = new ArrayList<PlayerManager>();
+	
+	private Player winningPlayer;
 
 	public Gmanager(ArrayList<Player> players, World world) {
 		this.players = players;
@@ -55,31 +57,31 @@ public class Gmanager {
 	public void tryToMoveLeft(Player player) {
 		int x=player.getX();
 		int y=player.getY();
-		if (x-1>=0&&!world.getBlockMatrix()[x-1][y].isPhysical()) player.moveLeft();
+		if (x-1>=0&&!world.getBlockMatrix()[y][x-1].isPhysical()) player.moveLeft();
 	}
 	
 	public void tryToMoveRight(Player player) {
 		int x=player.getX();
 		int y=player.getY();
-		if (x+1<world.getDimension()&&!world.getBlockMatrix()[x+1][y].isPhysical()) player.moveRight();
+		if (x+1<world.getDimension()&&!world.getBlockMatrix()[y][x+1].isPhysical()) player.moveRight();
 	}
 	
 	public void tryToMoveUp(Player player) {
 		int x=player.getX();
 		int y=player.getY();
-		if(y-1>=0&&!world.getBlockMatrix()[x][y-1].isPhysical()) player.moveUp();
+		if(y-1>=0&&!world.getBlockMatrix()[y-1][x].isPhysical()) player.moveUp();
 	}
 	
 	public void tryToMoveDown(Player player) {
 		int x=player.getX();
 		int y=player.getY();
-		if (y+1<world.getDimension()&&!world.getBlockMatrix()[x][y+1].isPhysical()) player.moveDown();
+		if (y+1<world.getDimension()&&!world.getBlockMatrix()[y+1][x].isPhysical()) player.moveDown();
 	}
 	
 	public void tryToReloadTank(Player player ,Position p) {
 		int x=p.getX();
 		int y=p.getY();
-		if(world.getBlockMatrix()[x][y].getColor()==player.getColor()) player.reloadTank();
+		if(world.getBlockMatrix()[y][x].getColor()==player.getColor()) player.reloadTank();
 	}
 	
 	
