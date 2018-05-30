@@ -66,6 +66,15 @@ public class World {
 		if (p.getColor().equals(blockMatrix[p.getY()][p.getX()].getColor()))
 			p.reloadTank();
 	}
+	
+	public boolean checkColor(Color c) {
+		for (int i=0;i<dimWorld;i++) {
+			for (int j=0;j<dimWorld;j++) {
+				if(blockMatrix[i][j].equals(c)) return true;
+			}
+		}
+		return false;
+	}
 
 	public void paint(Position p, Color color) {
 		if (p.getX() < 0 || p.getX() > dimWorld || p.getY() < 0 || p.getY() > dimWorld)
