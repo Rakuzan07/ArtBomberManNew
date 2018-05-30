@@ -62,6 +62,10 @@ public class Player {
 		this.state=state;
 	}
 	
+	public void setInkTank(int value) {
+		inkTank=value;
+	}
+	
 	public void reloadTank() {
 		if (inkTank == 0)
 			inkTank = numBomb;

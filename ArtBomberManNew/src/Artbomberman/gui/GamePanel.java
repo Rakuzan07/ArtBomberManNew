@@ -106,24 +106,28 @@ public class GamePanel extends JPanel implements KeyListener {
 	public GamePanel() {
 		super();
 		/*
-		 * INIZIO PARTE COMMENTATA
-		 * Nel costruttore , imposto lo stato del JPanel a DEMO_SCREEN per indicare che quando avvio il gioco voglio vedere il demo 
-		 * L'oggetto gamereader mi serve per effettuare le operazioni di input/output ossia salvare su un file di testo il mondo o ricaricarlo una volta salvato
-		 * i metodi sono load per caricarlo e save per salvarlo .
-		 * Una volta invocato il metodo load su gamereader , riempio le variabili dell'oggetto gamereader (vedi la classe gamereader ) e per passare il	 
-		 * il mondo a demoWorld (*) e players (*) utilizzo i metodi get di gamereader ;
-		 * contAnimation è un array di contatori che viene usato per simulare i movimenti dei personaggi ( indica quale immagine mostrare su schermo in base
-		 * al contatore , ogni indice della lista è collegato ad un giocatore , indice 0 per il contAnimazione del personaggio0) 
+		 * INIZIO PARTE COMMENTATA Nel costruttore , imposto lo stato del JPanel a
+		 * DEMO_SCREEN per indicare che quando avvio il gioco voglio vedere il demo
+		 * L'oggetto gamereader mi serve per effettuare le operazioni di input/output
+		 * ossia salvare su un file di testo il mondo o ricaricarlo una volta salvato i
+		 * metodi sono load per caricarlo e save per salvarlo . Una volta invocato il
+		 * metodo load su gamereader , riempio le variabili dell'oggetto gamereader
+		 * (vedi la classe gamereader ) e per passare il il mondo a demoWorld (*) e
+		 * players (*) utilizzo i metodi get di gamereader ; contAnimation è un array di
+		 * contatori che viene usato per simulare i movimenti dei personaggi ( indica
+		 * quale immagine mostrare su schermo in base al contatore , ogni indice della
+		 * lista è collegato ad un giocatore , indice 0 per il contAnimazione del
+		 * personaggio0)
 		 */
 		screenStatus = DEMO_SCREEN;
 		demoPlayers = new ArrayList<Player>();
 		try {
 			gamereader.load(urlToString(this.getClass().getResource("saveData//demoWorld.txt").getPath()));
-			demoPlayers = gamereader.getPlayers(); //(*)
+			demoPlayers = gamereader.getPlayers(); // (*)
 			for (int i = 0; i < demoPlayers.size(); i++) {
 				demoinitPosition.add(new Position(demoPlayers.get(i).getX(), demoPlayers.get(i).getY()));
 			}
-			demoWorld = gamereader.getWorld(); //(*)
+			demoWorld = gamereader.getWorld(); // (*)
 			demoGmanager = new Gmanager(demoPlayers, demoWorld);
 			demoPlayers.get(0).setState(Status.DOWN);
 			demoPlayers.get(1).setState(Status.DOWN);
@@ -214,7 +218,8 @@ public class GamePanel extends JPanel implements KeyListener {
 	}
 
 	public static String urlToString(String s) {
-		if(!s.substring(0, 1).equals("/")) return s;
+		if (!s.substring(0, 1).equals("/"))
+			return s;
 		StringTokenizer st = new StringTokenizer(s, "/");
 		String string = "";
 		while (st.hasMoreTokens()) {
@@ -242,10 +247,10 @@ public class GamePanel extends JPanel implements KeyListener {
 	private void setEventManager() {
 
 		this.addMouseListener(new MouseAdapter() {
-			
-          /*
-           * 
-           */
+
+			/*
+			 * 
+			 */
 			public void mouseClicked(MouseEvent e) {
 				int x = e.getX();
 				int y = e.getY();
@@ -257,7 +262,7 @@ public class GamePanel extends JPanel implements KeyListener {
 					if (x >= playX && x <= (playX + play.getWidth(GamePanel.this)) && y >= playY
 							&& y <= playY + play.getHeight(GamePanel.this)) {
 						screenStatus = SELECT_WORLD_SCREEN;
-						winningPlayer=null;
+						winningPlayer = null;
 					}
 					if (x >= editorX && x <= (editorX + play.getWidth(GamePanel.this)) && y >= editorY
 							&& y <= editorY + play.getHeight(GamePanel.this)) {
@@ -344,7 +349,7 @@ public class GamePanel extends JPanel implements KeyListener {
 							&& y <= playY + play.getHeight(GamePanel.this)) {
 						screenStatus = PLAY_SCREEN;
 						contUpdate = NUM_STEP - 1;
-						contForRealPlayer=0;
+						contForRealPlayer = 0;
 						winningPlayer = null;
 					}
 
@@ -357,20 +362,20 @@ public class GamePanel extends JPanel implements KeyListener {
 							&& y <= homeY + home.getHeight(GamePanel.this))
 						screenStatus = DEMO_SCREEN;
 				}
-				
-				if(screenStatus==SELECT_WORLD_SCREEN) {
-					int numImageforCol=3;
-					int numImageforRow=5;
+
+				if (screenStatus == SELECT_WORLD_SCREEN) {
+					int numImageforCol = 3;
+					int numImageforRow = 5;
 					for (int i = 0; i < numImageforCol; i++) {
 						for (int j = 0; j < numImageforRow; j++) {
-							int worldX=(4*DIM_ASSET*(j+1))+DIM_ASSET*2;
-							int worldY=(3*DIM_ASSET*(i+1));
-							if(x>=worldX&&x<=(worldX + worlds.get(i).getWidth(GamePanel.this))&&y >= worldY
+							int worldX = (4 * DIM_ASSET * (j + 1)) + DIM_ASSET * 2;
+							int worldY = (3 * DIM_ASSET * (i + 1));
+							if (x >= worldX && x <= (worldX + worlds.get(i).getWidth(GamePanel.this)) && y >= worldY
 									&& y <= worldY + worlds.get(i).getHeight(GamePanel.this)) {
-								loadWorld(i*5+j);
+								loadWorld(i * 5 + j);
 								screenStatus = PLAY_SCREEN;
 								contUpdate = NUM_STEP - 1;
-								contForRealPlayer=0;
+								contForRealPlayer = 0;
 								winningPlayer = null;
 								return;
 							}
@@ -382,11 +387,12 @@ public class GamePanel extends JPanel implements KeyListener {
 		});
 
 	}
-	
+
 	private void loadWorld(int numWorld) {
 		try {
-			gamereader.load(urlToString(this.getClass().getResource("saveData//world"+numWorld+".txt").getPath()));
-		}catch(IOException e) {}
+			gamereader.load(urlToString(this.getClass().getResource("saveData//world" + numWorld + ".txt").getPath()));
+		} catch (IOException e) {
+		}
 		initPosition.clear();
 		players = gamereader.getPlayers();
 		players.get(0).setState(Status.DOWN);
@@ -610,8 +616,20 @@ public class GamePanel extends JPanel implements KeyListener {
 				for (int i = 0; i < initPosition.size() - 1; i++) {
 					initPosition.set(i, new Position(players.get(i).getX(), players.get(i).getY()));
 				}
-				if(players.get(0).getInkTank()>0||players.get(0).getInkTank()==0&&world.checkColor(players.get(0).getColor()))Gmanager.update(players.get(0));
-				if(players.get(1).getInkTank()>0||players.get(1).getInkTank()==0&&world.checkColor(players.get(1).getColor()))Gmanager.update(players.get(1));
+				if (world.getBlockMatrix()[players.get(0).getY()][players.get(0).getY()].getColor()
+						.equals(players.get(0).getColor())
+						&& !world.getBlockMatrix()[players.get(0).getY()][players.get(0).getY()].isPhysical())
+					players.get(0).reloadTank();
+				if (world.getBlockMatrix()[players.get(1).getY()][players.get(1).getY()].getColor()
+						.equals(players.get(1).getColor())
+						&& !world.getBlockMatrix()[players.get(1).getY()][players.get(1).getY()].isPhysical())
+					players.get(1).reloadTank();
+				if (players.get(0).getInkTank() > 0
+						|| (players.get(0).getInkTank() == 0 && !world.checkColor(players.get(0).getColor())))
+					Gmanager.update(players.get(0));
+				if (players.get(1).getInkTank() > 0
+						|| (players.get(1).getInkTank() == 0 && !world.checkColor(players.get(1).getColor())))
+					Gmanager.update(players.get(1));
 			}
 			contUpdate = (contUpdate + 1) % 17;
 			for (int i = 0; i < players.size(); i++) {
@@ -686,23 +704,22 @@ public class GamePanel extends JPanel implements KeyListener {
 					g.drawImage(ring5, j * DIM_ASSET, i * DIM_ASSET, this);
 			}
 		}
-		drawWorlds(4,3,g);
+		drawWorlds(4, 3, g);
 	}
 
-	
-	private void drawWorlds(int x, int y,Graphics g) {
+	private void drawWorlds(int x, int y, Graphics g) {
 		int numImageforRow = 5;
 		int numImageforCol = 3;
-		int cont=0;
+		int cont = 0;
 		for (int i = 0; i < numImageforCol; i++) {
 			for (int j = 0; j < numImageforRow; j++) {
-				g.drawImage(worlds.get(cont),(x*DIM_ASSET*(j+1))+DIM_ASSET*2,(y*DIM_ASSET*(i+1)),this);
+				g.drawImage(worlds.get(cont), (x * DIM_ASSET * (j + 1)) + DIM_ASSET * 2, (y * DIM_ASSET * (i + 1)),
+						this);
 				cont++;
 			}
 		}
 	}
-	
-	
+
 	private void paintEntryScreen(Graphics g) {
 		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
 			for (int j = 0; j < (this.getWidth() / DIM_ASSET) + 1; j++) {
