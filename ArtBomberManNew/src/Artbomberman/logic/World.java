@@ -62,7 +62,7 @@ public class World {
 		return blockMatrix;
 	}
 
-	public void reloadTank(Player p) {
+	public void reloadTank(Player p) {  //RICARICA BOMBE DEL PLAYER P
 		if (p.getColor().equals(blockMatrix[p.getY()][p.getX()].getColor()))
 			p.reloadTank();
 	}
@@ -76,7 +76,7 @@ public class World {
 		return false;
 	}
 
-	public void paint(Position p, Color color) {
+	public void paint(Position p, Color color) {  //COLORAMENTO DEI BLOCCHI (MATRICE 3X3) ALL'ESPOSIONE DELLE BOMBE
 		if (p.getX() < 0 || p.getX() > dimWorld || p.getY() < 0 || p.getY() > dimWorld)
 			throw new IllegalArgumentException();
 		int x = p.getX();
@@ -157,7 +157,7 @@ public class World {
 			}
 	}
 
-	public double checkVictory(Player p) {
+	public double checkVictory(Player p) { //CONTROLLA QUANTE CASELLE DELLO STESSO COLORE SONO STATE COLORATE PER DETERMINARE LA VITTORIA
 		if (!players.contains(p))
 			throw new IllegalArgumentException("The player does not exist in this world");
 		double cont = 0;
@@ -170,7 +170,7 @@ public class World {
 		return ( cont / (dimWorld*dimWorld));
 	}
 
-	public double checkMatrix(Color color, int x, int y) { //RESTITUISCE UN DOUBLE CHE RAPPRESENTA L'EFFICACIA DELL'ESPLOSIONE DI UNA BOMBA IN UNA POSIZIONE
+	public double checkMatrix(Color color, int x, int y) { //RESTITUISCE UN DOUBLE CHE RAPPRESENTA L'EFFICACIA DELL'ESPLOSIONE DI UNA BOMBA IN UNA POSIZIONE. IL COLORAMENTO DI UNA CASELLA VALE 1 MENTRE QUELLA DI UN BLOCCO VALE 1/3. METODO UTILIZZATO DAI NEMICI PER TROVARE UNA POSIZIONE OTTIMA NELLA QUALE PIAZZARE LA BOMBA
 		int posPlayer = players.indexOf(new Player(color, new Position(0, 0)));
 		ArrayList<Position> bomb = players.get(posPlayer).getBombPosition();
 		double cont = -returncontBomb(bomb, x, y);

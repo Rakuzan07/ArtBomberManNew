@@ -71,7 +71,7 @@ public class Position {
 		return true;
 	}
 	
-	public double shift(Position position) {
+	public double shift(Position position) {  //DISTANZA DA UN PUNTO AD UN ALTRO
 		return Math.sqrt(Math.pow(x-position.x,2)+Math.pow(y-position.y,2));
 	}
 

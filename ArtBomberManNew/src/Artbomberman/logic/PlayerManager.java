@@ -25,7 +25,7 @@ public class PlayerManager {
 
 	private boolean firstCheck = true;
 
-	private boolean checkPosition = false;
+	private boolean checkPosition = false; //BOOLEANA CHE DICE SE TROV
 
 	private boolean inkFocussed = false, targetFocussed = false;
 
@@ -66,15 +66,15 @@ public class PlayerManager {
 	}
 
 	public void update() {
-		if (!inkFocussed && player.getInkTank() == 0) { // TROVARE IL PUNTO PIU' VICINO PER RIFORNIRSI
+		if (!inkFocussed && player.getInkTank() == 0) { //TROVARE IL PUNTO PIU' VICINO PER RIFORNIRSI SE NON LO HA GIà TROVATO E SE HA 0 BOMBE
 			for (int i = 0; i < world.getDimension(); i++) {
 				for (int j = 0; j < world.getDimension(); j++) {
 					if (!world.getBlockMatrix()[i][j].isPhysical()
-							&& world.getBlockMatrix()[i][j].getColor() == player.getColor() && firstCheck) {
+							&& world.getBlockMatrix()[i][j].getColor() == player.getColor() && firstCheck) { //PRIMO CONTROLLO NEL QUALE TROVA UNA POSIZIONE DEL SUO STESSO COLORE CHE NON SIA UN BLOCCO
 						tempPos = new Position(j, i);
 						firstCheck = false;
 					} else if (!world.getBlockMatrix()[i][j].isPhysical()
-							&& world.getBlockMatrix()[i][j].getColor() == player.getColor()) {
+							&& world.getBlockMatrix()[i][j].getColor() == player.getColor()) { //SE HA EFFETTUATO UN PRIMO CONTROLLO E QUINDI HA GIà UNA POSIZIONE VALIDA LA CONFRONTA CON ALTRE POSIZIONI VALIDE PER TROVARE QUELLA PIù VICINA
 						int xf = player.getX() - j;
 						int yf = player.getY() - i;
 						double shift = Math.sqrt(Math.pow(xf, 2) + Math.pow(yf, 2));
@@ -92,7 +92,7 @@ public class PlayerManager {
 			if (way != null && tempPos!=null) {
 				if (way.size() == 0)
 					inkFocussed = false;
-				else {
+				else { //SE NON ABBIAMO BOMBE E ABBIAMO UN CAMMINO DA PERCORRE PER RAGGIUNGERE UNA POSIONE NELLA QUALE RIFORNIRCI FACCIAMO MUORE IL PLAYER
 					tempPos = way.get(0);
 					if (player.getX() - tempPos.getX() > 0) {
 						player.moveLeft();
@@ -112,12 +112,12 @@ public class PlayerManager {
 						inkFocussed = !(player.getInkTank() > 0);
 					}
 					firstCheck = true;
-					if (player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY()))
+					if (player.getX() == (tempPos.getX()) && player.getY() == (tempPos.getY())) //AGGIORNIAMO LE POSIZIONI DEL PLAYER E LE RIMUOVIAMO DAL PERCORSO DA PERCORRERE
 						way.remove(0);
 				}
 			}
 		}
-		if (!checkPosition && player.getInkTank() > 0) {
+		if (!checkPosition && player.getInkTank() > 0) { //SE INVECE ABBIAMO DELLE BOMBE TROVIAMO UNA POSIZIONE VALIDA DOVE PIAZZARLA
 			for (int i = 0; i < world.getDimension(); i++) {
 				for (int j = 0; j < world.getDimension(); j++) {
 					if (world.getBlockMatrix()[i][j].getColor() != player.getColor()
@@ -125,12 +125,12 @@ public class PlayerManager {
 						tempPos = new Position(j, i);
 						cont = world.checkMatrix(player.getColor(), j, i);
 						firstCheck = false;
-					} else if (world.getBlockMatrix()[i][j].getColor() != player.getColor()) {
+					} else if (world.getBlockMatrix()[i][j].getColor() != player.getColor()) { //SE ABBIAMO ALMENO UNA POSIZONE VALIDA LA CONFRONTIAMO CON LE ALTRE POSIZIONI VALIDE PER CAPIRE QUALE ESPLOSIONE è PIù EFFICACE
 						double cont1 = world.checkMatrix(player.getColor(), j, i);
 						if (cont < cont1) {
 							cont = cont1;
 							tempPos = new Position(j, i);
-						} else if (cont == cont1) {
+						} else if (cont == cont1) { //SE IN ENTRAMBE LE POSIZIONI LE BOMBE HANNO LA STESSA EFFICACIA CONSIDERIAMO QUELLA CON DISTANZA MINIMA DALLA NOSTRA POS
 							int xf = player.getX() - j;
 							int yf = player.getY() - i;
 							double shift = Math.sqrt(Math.pow(xf, 2) + Math.pow(yf, 2));
@@ -142,7 +142,7 @@ public class PlayerManager {
 					}
 				}
 			}
-			way = chooseWay(player.getPosition(), tempPos);
+			way = chooseWay(player.getPosition(), tempPos); //AVENDO TROVATO UNA POS NELLA QUALE POSIZIONARE UNA BOMBA CI CALCOLIAMO IL CAMMINO PER RAGGIUNGERLA
 			checkPosition = true;
 			if (way.size() != 0)
 				tempPos = way.get(0);
@@ -170,7 +170,7 @@ public class PlayerManager {
 
 	}
 
-	private ArrayList<Position> chooseWay(Position departure, Position arrival) {
+	private ArrayList<Position> chooseWay(Position departure, Position arrival) {  //METODO UTILIZZATO PER DETERMINARE IL CAMMINO
 		ArrayList<Position> empty = new ArrayList<Position>();
 		ArrayList<Position> visited = new ArrayList<Position>();
 		chooseWayRic(departure, arrival, empty, visited);
@@ -180,7 +180,7 @@ public class PlayerManager {
 		return empty;
 	}
 
-	private ArrayList<Position> trim(Position departure, ArrayList<Position> way) {
+	private ArrayList<Position> trim(Position departure, ArrayList<Position> way) { //METODO CHE RIDUCE LE POSIZIONI DA PERCORRERE
 		int index = way.indexOf(departure);
 		if (index < 0)
 			return null;
@@ -192,7 +192,7 @@ public class PlayerManager {
 	}
 
 	private void chooseWayRic(Position departure, Position arrival, ArrayList<Position> position,
-			ArrayList<Position> visited) {
+			ArrayList<Position> visited) { //METODO RICORSIVO CHE FORMA UN CAMMINO MINIMO DAL PUNTO DEL PERSONAGGIO ALLA POSIZONE DA RAGGIUNGERE
 		if (arrival.equals(departure)) {
 			return;
 		}
@@ -212,7 +212,7 @@ public class PlayerManager {
 		}
 	}
 
-	private void orderPosition(Position departure, Position arrival, ArrayList<Position> position) {
+	private void orderPosition(Position departure, Position arrival, ArrayList<Position> position) {  //METODO UTILIZZATO PER ORDINARE LE POSIZIONI IN UN ARRAY IN BASE A QUANTO SONO DISTANTI DALL'ARRIVO
 		if (position.size() == 0)
 			return;
 		for (int i = 0; i < position.size(); i++) {
