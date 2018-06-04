@@ -17,6 +17,9 @@ public class Gmanager {
 
 	private ArrayList<PlayerManager> playersManager = new ArrayList<PlayerManager>();
 	
+	private Player playerOneMulti;
+	private PlayerManager playerOneManager;
+	
 	private Player winningPlayer;
 
 	public Gmanager(ArrayList<Player> players, World world) {
@@ -27,6 +30,11 @@ public class Gmanager {
 		}
 	}
 	
+	public Gmanager(Player playerOneMulti, World world) {
+		this.playerOneMulti = playerOneMulti ;
+		this.world = world;
+		playerOneManager=new PlayerManager(playerOneMulti, world);
+	}
 	
 	public World getWorld() {
 		return world;
@@ -40,6 +48,10 @@ public class Gmanager {
 		for (int i = 0; i < players.size(); i++) {
 			playersManager.get(i).tryExplosion(cont);
 		}
+	}
+	
+	public void TryToExplodeSinglePlayer(int cont) {
+		playerOneManager.tryExplosion(cont);
 	}
 
 	public void updateAll() {

@@ -30,7 +30,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	private static final int DIM_ASSET = 64;
 
 	private static final int INIT_WORLD_DIM = 13, NUM_STEP = 16, SPEED = 4, IDLE = 0, EXPLOSION = 48, DEMO_SCREEN = 0,
-			PLAY_SCREEN = 1, EDITOR_SCREEN = 2, SELECT_WORLD_SCREEN = 3, NUM_WORLDS = 15;
+			PLAY_SCREEN = 1, EDITOR_SCREEN = 2, SELECT_WORLD_SCREEN = 3,MULTIPLAYER_SCREEN=4, NUM_WORLDS = 15;
 
 	private ArrayList<Player> demoPlayers, players;
 
@@ -55,9 +55,9 @@ public class GamePanel extends JPanel implements KeyListener {
 	private Image title, ground, groundGreen, groundRed, groundBlue, ring1, ring2, ring3, ring4, ring5, editor, play,
 			bomb, backGroundEditor, editorTitle, up, down, save, clear, load, faceBlue, faceGreen, faceRed, minor,
 			major, one, two, three, zero, five, gameOver, win, home, oneRed, twoRed, threeRed, zeroRed, fourRed,
-			bombText;
+			bombText,multiPlayer,join,inviteFriends;
 
-	private static final int SHIFT_PLAY = 2, SHIFT_EDITOR = 3, TABLE_EDITOR = 7, BLUE = 0, GREEN = 1, RED = 2;
+	private static final int SHIFT_PLAY = 2, SHIFT_EDITOR = 3,SHIFT_MULTIPLAYER=4, TABLE_EDITOR = 7, BLUE = 0, GREEN = 1, RED = 2;
 
 	private static final int ENTER_KEY = 10, RIGHT_KEY = 39, LEFT_KEY = 37, UP_KEY = 38, DOWN_KEY = 40, ESC_KEY = 27,
 			BOMB_KEY = 32;
@@ -140,6 +140,10 @@ public class GamePanel extends JPanel implements KeyListener {
 		/*
 		 * FINE PARTE COMMENTATA
 		 */
+		
+		//********************//
+		//CARICAMENTO IMMAGINI//
+		//********************//
 		tk = Toolkit.getDefaultToolkit();
 		title = tk.getImage(this.getClass().getResource("resources//entry//Titolo.png"));
 		ground = tk.getImage(this.getClass().getResource("resources//entry//ground_gray.png"));
@@ -179,6 +183,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		home = tk.getImage(this.getClass().getResource("var//home.png"));
 		win = tk.getImage(this.getClass().getResource("var//Win.png"));
 		gameOver = tk.getImage(this.getClass().getResource("var//textGameOver.png"));
+		multiPlayer = tk.getImage(this.getClass().getResource("var//multiplayer.png"));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_BlueSelected.png")));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_GreenSelected.png")));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_RedSelected.png")));
@@ -212,12 +217,17 @@ public class GamePanel extends JPanel implements KeyListener {
 					.add(tk.getImage(this.getClass().getResource("resources//player//player_" + (9 + i) + "red.png")));
 		}
 		play = tk.getImage(this.getClass().getResource("resources//entry//play.png"));
+		
+		//********************//
+		//CARICAMENTO IMMAGINI//
+		//********************//
+		
 		this.setEventManager();
 		this.addKeyListener(this);
 		new Thread(new Sketcher()).start();
 	}
 
-	public static String urlToString(String s) {
+	public static String urlToString(String s) {		//?????
 		if (!s.substring(0, 1).equals("/"))
 			return s;
 		StringTokenizer st = new StringTokenizer(s, "/");
@@ -228,6 +238,13 @@ public class GamePanel extends JPanel implements KeyListener {
 		return string.substring(0, string.length() - 2);
 	}
 
+	
+	
+	
+	
+	
+	
+	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (screenStatus == DEMO_SCREEN) {
@@ -242,7 +259,21 @@ public class GamePanel extends JPanel implements KeyListener {
 		if (screenStatus == SELECT_WORLD_SCREEN) {
 			paintSelectWorldScreen(g);
 		}
+		if(screenStatus == MULTIPLAYER_SCREEN) {
+			MultiPlayer(g);
+		}
 	}
+	
+	
+	//****************//
+	//EVENTI DEL MOUSE//
+	//****************//
+	
+	
+	
+
+
+
 
 	private void setEventManager() {
 
@@ -259,11 +290,24 @@ public class GamePanel extends JPanel implements KeyListener {
 					int playY = play.getHeight(GamePanel.this) * SHIFT_PLAY;
 					int editorX = GamePanel.this.getWidth() - (play.getWidth(GamePanel.this) * SHIFT_PLAY);
 					int editorY = play.getHeight(GamePanel.this) * SHIFT_EDITOR;
+					int multiplayerX=GamePanel.this.getWidth() - (play.getWidth(GamePanel.this) * SHIFT_PLAY);
+					int multiplayerY=play.getHeight(GamePanel.this) * SHIFT_MULTIPLAYER;
+					
 					if (x >= playX && x <= (playX + play.getWidth(GamePanel.this)) && y >= playY
 							&& y <= playY + play.getHeight(GamePanel.this)) {
 						screenStatus = SELECT_WORLD_SCREEN;
 						winningPlayer = null;
 					}
+					
+					
+					
+					if(x>=multiplayerX && x<=(multiplayerX + multiPlayer.getWidth(GamePanel.this)) && y>=multiplayerY && y<=(multiplayerY+multiPlayer.getHeight(GamePanel.this))){
+						screenStatus=SELECT_WORLD_SCREEN;
+						winningPlayer=null;
+					}
+					
+					
+					
 					if (x >= editorX && x <= (editorX + play.getWidth(GamePanel.this)) && y >= editorY
 							&& y <= editorY + play.getHeight(GamePanel.this)) {
 						screenStatus = EDITOR_SCREEN;
@@ -382,11 +426,23 @@ public class GamePanel extends JPanel implements KeyListener {
 						}
 					}
 				}
+				
+			 
 			}
 
 		});
 
 	}
+	
+	
+	
+	//****************//
+	//EVENTI DEL MOUSE//
+	//****************//
+	
+	
+	
+	
 
 	private void loadWorld(int numWorld) {
 		try {
@@ -403,8 +459,13 @@ public class GamePanel extends JPanel implements KeyListener {
 			initPosition.add(new Position(players.get(i).getX(), players.get(i).getY()));
 		}
 		Gmanager = new Gmanager(players, world);
-	}
+}
+	
+	
 
+	
+	
+	
 	private void paintEditorScreen(Graphics g) {
 		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
 			for (int j = 0; j < (this.getWidth() / DIM_ASSET) + 1; j++) {
@@ -421,6 +482,7 @@ public class GamePanel extends JPanel implements KeyListener {
 					g.drawImage(ring5, j * DIM_ASSET, i * DIM_ASSET, this);
 			}
 		}
+		
 		for (int i = 0; i < TABLE_EDITOR + 1; i++) {
 			for (int j = 0; j < TABLE_EDITOR; j++) {
 				g.drawImage(backGroundEditor, (j + 1) * DIM_ASSET, (i + 1) * DIM_ASSET, this);
@@ -449,6 +511,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		g.drawImage(save, 23 * DIM_ASSET, DIM_ASSET, this);
 		g.drawImage(load, 23 * DIM_ASSET, (3 * DIM_ASSET) + 12, this);
 		g.drawImage(play, 23 * DIM_ASSET, (5 * DIM_ASSET) + 24, this);
+		
 		if (keyPressed == ENTER_KEY) {
 			if (tickCount == 1) {
 				g.drawImage(blocks.get(contBlock), (blockX + 9) * DIM_ASSET, (blockY + 1) * DIM_ASSET, this);
@@ -565,6 +628,23 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 
 	}
+	
+	
+	
+	
+	
+	//***********//
+	//MULTIPLAYER//
+	//***********//
+	
+	private void MultiPlayer(Graphics g) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	//***********//
+	//MULTIPLAYER//
+	//***********//
 
 	private void paintPlayScreen(Graphics g) {
 		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
@@ -611,6 +691,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		g.drawImage(home, 22 * DIM_ASSET, 2 * DIM_ASSET, this);
+		
 		if (winningPlayer == null) {
 			if (contUpdate == NUM_STEP) {
 				for (int i = 0; i < initPosition.size() - 1; i++) {
@@ -640,13 +721,16 @@ public class GamePanel extends JPanel implements KeyListener {
 							this);
 				}
 			}
+			
 			if (contForRealPlayer == NUM_STEP) {
 				initPosition.set(2, new Position(players.get(2).getX(), players.get(2).getY()));
 				isPressed = false;
 				contForRealPlayer = 0;
 			}
+			
 			if (isPressed)
 				contForRealPlayer = (contForRealPlayer + 1);
+			
 			if (keyPressed == LEFT_KEY) {
 				Gmanager.tryToMoveLeft(players.get(2));
 				keyPressed = 0;
@@ -671,6 +755,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			Gmanager.tryToReloadTank(players.get(2), initPosition.get(2));
 			Gmanager.tryToExplodeAll(EXPLOSION);
 		}
+		
 		drawPlayer(players.get(0), g, shiftHeight, shiftWidth, initPosition, contUpdate);
 		drawPlayer(players.get(1), g, shiftHeight, shiftWidth, initPosition, contUpdate);
 		drawPlayer(players.get(2), g, shiftHeight, shiftWidth, initPosition, contForRealPlayer);
@@ -762,6 +847,8 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 		g.drawImage(play, this.getWidth() - (play.getWidth(this) * 2), (play.getHeight(this) * 2), this);
 		g.drawImage(editor, this.getWidth() - (editor.getWidth(this) * 2), (editor.getHeight(this) * 3) + 15, this);
+		g.drawImage(multiPlayer,this.getWidth()-(editor.getWidth(this)*2),(multiPlayer.getHeight(this)*4)+30,this);
+		
 		if (contUpdate == NUM_STEP) {
 			for (int i = 0; i < demoinitPosition.size(); i++) {
 				demoinitPosition.set(i, new Position(demoPlayers.get(i).getX(), demoPlayers.get(i).getY()));
