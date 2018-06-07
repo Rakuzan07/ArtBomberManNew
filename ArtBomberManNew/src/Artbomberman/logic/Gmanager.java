@@ -50,6 +50,11 @@ public class Gmanager {
 		}
 	}
 	
+	public void tryToExplode(int cont,int index) {
+		
+		playersManager.get(index).tryExplosion(cont);
+	}
+	
 	public void TryToExplodeSinglePlayer(int cont) {
 		playerOneManager.tryExplosion(cont);
 	}
