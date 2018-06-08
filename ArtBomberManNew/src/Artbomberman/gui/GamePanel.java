@@ -521,7 +521,7 @@ public class GamePanel extends JPanel implements KeyListener {
 				
 			playerOne=new Player(Color.GREEN,new Position(0,0));
 			playerTwo=new Player(Color.BLUE,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
-			
+
 			playerOne.setState(Status.DOWN);
 			playerTwo.setState(Status.DOWN);
 			
@@ -884,8 +884,8 @@ public class GamePanel extends JPanel implements KeyListener {
 		Gmanager.tryToExplodeAll(EXPLOSION);
 		}
 		
-		drawPlayer(playersMulti.get(0), g, shiftHeight, shiftWidth, initPosition, contPlayerOne);
-		drawPlayer(playersMulti.get(1), g, shiftHeight, shiftWidth, initPosition, contPlayerTwo);
+		drawPlayer(playersMulti.get(0), g, shiftHeight, shiftWidth, initPosition, playersMulti , contPlayerOne);
+		drawPlayer(playersMulti.get(1), g, shiftHeight, shiftWidth, initPosition, playersMulti ,contPlayerTwo);
 		
 		drawPlayerPercentual(playersMulti.get(0), 3, 3, g);
 		drawPlayerPercentual(playersMulti.get(1), 3, 5, g);
@@ -1062,8 +1062,8 @@ public class GamePanel extends JPanel implements KeyListener {
 		Gmanager.tryToExplodeAll(EXPLOSION);
 		}
 		
-		drawPlayer(playersMulti.get(0), g, shiftHeight, shiftWidth, initPosition, contPlayerOne);
-		drawPlayer(playersMulti.get(1), g, shiftHeight, shiftWidth, initPosition, contPlayerTwo);
+		drawPlayer(playersMulti.get(0), g, shiftHeight, shiftWidth, initPosition, playersMulti ,contPlayerOne);
+		drawPlayer(playersMulti.get(1), g, shiftHeight, shiftWidth, initPosition,  playersMulti ,contPlayerTwo);
 		
 		drawPlayerPercentual(playersMulti.get(0), 3, 3, g);
 		drawPlayerPercentual(playersMulti.get(1), 3, 5, g);
@@ -1195,9 +1195,9 @@ public class GamePanel extends JPanel implements KeyListener {
 			Gmanager.tryToExplodeAll(EXPLOSION);
 		}
 		
-		drawPlayer(players.get(0), g, shiftHeight, shiftWidth, initPosition, contUpdate);
-		drawPlayer(players.get(1), g, shiftHeight, shiftWidth, initPosition, contUpdate);
-		drawPlayer(players.get(2), g, shiftHeight, shiftWidth, initPosition, contForRealPlayer);
+		drawPlayer(players.get(0), g, shiftHeight, shiftWidth, initPosition, demoPlayers ,contUpdate);
+		drawPlayer(players.get(1), g, shiftHeight, shiftWidth, initPosition, demoPlayers ,contUpdate);
+		drawPlayer(players.get(2), g, shiftHeight, shiftWidth, initPosition, demoPlayers ,contForRealPlayer);
 		drawPlayerPercentual(players.get(0), 3, 3, g);
 		drawPlayerPercentual(players.get(1), 3, 5, g);
 		drawPlayerPercentual(players.get(2), 3, 7, g);
@@ -1305,14 +1305,14 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		demoGmanager.tryToExplodeAll(EXPLOSION);
-		drawPlayer(demoPlayers.get(0), g, shiftHeight, shiftWidth, demoinitPosition, contUpdate);
-		drawPlayer(demoPlayers.get(1), g, shiftHeight, shiftWidth, demoinitPosition, contUpdate);
-		drawPlayer(demoPlayers.get(2), g, shiftHeight, shiftWidth, demoinitPosition, contUpdate);
+		drawPlayer(demoPlayers.get(0), g, shiftHeight, shiftWidth, demoinitPosition, demoPlayers ,contUpdate);
+		drawPlayer(demoPlayers.get(1), g, shiftHeight, shiftWidth, demoinitPosition, demoPlayers ,contUpdate);
+		drawPlayer(demoPlayers.get(2), g, shiftHeight, shiftWidth, demoinitPosition,demoPlayers , contUpdate);
 		g.drawImage(title, midWidth - titleWidth / 2, 0, this);
 	}
 
 	private void drawPlayer(Player p, Graphics g, int localHeight, int localWidth, ArrayList<Position> demoinitPosition,
-			int contUpdate) {
+			ArrayList<Player> demoPlayers ,int contUpdate) {
 		int posPlayer = demoPlayers.indexOf(p);
 		if (demoinitPosition.get(posPlayer).equals(p.getPosition())) {
 			if (p.getState() == Status.UP) {
