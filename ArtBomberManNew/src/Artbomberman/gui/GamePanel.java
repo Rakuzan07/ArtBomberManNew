@@ -333,10 +333,11 @@ public class GamePanel extends JPanel implements KeyListener {
 					
 					if(x>=joinX && x<=(joinX + join.getWidth(GamePanel.this)) && y>=joinY && y<=(joinY+join.getHeight(GamePanel.this))){
 						
-						screenStatus=JOIN_SCREEN;
+						screenStatus=SELECT_WORLD_SCREEN;
+						//screenStatus=JOIN_SCREEN;
 						isClient=true;
-						client=new Client();
-						new Thread(client).start();
+						//client=new Client();
+						//new Thread(client).start();
 						winningPlayer=null;
 					}
 					
@@ -457,7 +458,10 @@ public class GamePanel extends JPanel implements KeyListener {
 							if (x >= worldX && x <= (worldX + worlds.get(i).getWidth(GamePanel.this)) && y >= worldY
 									&& y <= worldY + worlds.get(i).getHeight(GamePanel.this)) {
 								loadWorld(i * 5 + j);
-								if(isServer) {
+								
+								if(isClient)
+								screenStatus=JOIN_SCREEN;
+								else if(isServer) {
 								screenStatus = INVITEFRIEND_SCREEN;
 								NumWorld=i*5+j;
 								}
@@ -497,42 +501,28 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 		initPosition.clear();
 		
+		
 		if(!isServer && !isClient) {
-		players = gamereader.getPlayers();
-		players.get(0).setState(Status.DOWN);
-		players.get(1).setState(Status.DOWN);
-		players.get(2).setState(Status.UP);
-		world = gamereader.getWorld();
-		Gmanager = new Gmanager(players, world);
-		for (int i = 0; i < players.size(); i++) {
-			initPosition.add(new Position(players.get(i).getX(), players.get(i).getY()));
-		}
-		}
-		else if(isServer){
-			playerOne=new Player(Color.BLUE,new Position(0,0));
-			playerTwo=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
-			playerOne.setState(Status.DOWN);
-			playerTwo.setState(Status.UP);
-			
-            System.out.println(playerOne);
-            playersMulti=new ArrayList<Player>();
-			playersMulti.add(playerOne);
-			playersMulti.add(playerTwo);
-			world=gamereader.getWorld();
-			world.setPlayer(playersMulti);
-			Gmanager = new Gmanager(playersMulti, world);
-			for (int i = 0; i < playersMulti.size(); i++) {
-				initPosition.add(new Position(playersMulti.get(i).getX(), playersMulti.get(i).getY()));
+			players = gamereader.getPlayers();
+			players.get(0).setState(Status.DOWN);
+			players.get(1).setState(Status.DOWN);
+			players.get(2).setState(Status.UP);
+			world = gamereader.getWorld();
+			Gmanager = new Gmanager(players, world);
+			for (int i = 0; i < players.size(); i++) {
+				initPosition.add(new Position(players.get(i).getX(), players.get(i).getY()));
 			}
-			server=new Server();
-			new Thread(server).start();
-		}	
-		else {
+			}
+		
+		else if(isClient){
 			
-			playerOne=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
-			playerTwo=new Player(Color.BLUE,new Position(0,0));
+			//playerOne=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
+			//playerTwo=new Player(Color.BLUE,new Position(0,0));
+				
+			playerOne=new Player(Color.GREEN,new Position(0,0));
+			playerTwo=new Player(Color.BLUE,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
 			
-			playerOne.setState(Status.UP);
+			playerOne.setState(Status.DOWN);
 			playerTwo.setState(Status.DOWN);
 			
             playersMulti=new ArrayList<Player>();
@@ -544,7 +534,28 @@ public class GamePanel extends JPanel implements KeyListener {
 			for (int i = 0; i < playersMulti.size(); i++) {
 				initPosition.add(new Position(playersMulti.get(i).getX(), playersMulti.get(i).getY()));
 			}
-		}
+			}
+		else if(isServer){
+					playerOne=new Player(Color.BLUE,new Position(0,0));
+					playerTwo=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
+				
+					
+					playerOne.setState(Status.DOWN);
+					playerTwo.setState(Status.UP);
+					
+		            System.out.println(playerOne);
+		            playersMulti=new ArrayList<Player>();
+					playersMulti.add(playerOne);
+					playersMulti.add(playerTwo);
+					world=gamereader.getWorld();
+					world.setPlayer(playersMulti);
+					Gmanager = new Gmanager(playersMulti, world);
+					for (int i = 0; i < playersMulti.size(); i++) {
+						initPosition.add(new Position(playersMulti.get(i).getX(), playersMulti.get(i).getY()));
+					}
+					server=new Server();
+					new Thread(server).start();
+			}
 }
 	
 	
@@ -736,20 +747,21 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		
-		if(!client.isConnected())
+		/*if(!client.isConnected())
 		{
 			//DISEGNA IMMAGINE WAITING
 			g.drawImage(waitingFriend1,DIM_ASSET, DIM_ASSET, this);
 		}
-		else if(client.isConnected() && !checkConnection)
+		elseif(!checkConnection)//&& client.isConnected())
 		{
-			NumWorld=client.getNumWorld();
+			//NumWorld=client.getNumWorld();
+			NumWorld=0;
 			loadWorld(NumWorld);
 			checkConnection=true;
 		}
 
-		else {
-			
+		else {*/
+		
 		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
 		int shiftHeight = (this.getHeight() - (64 * world.getDimension())) / 2;
 		for (int i = 0; i < world.getDimension(); i++) {
@@ -802,12 +814,12 @@ public class GamePanel extends JPanel implements KeyListener {
 			contPlayerTwo = 0;
 		}
 		
-		System.out.println(playersMulti.get(1).getX()+"    "+playersMulti.get(1).getY());
-		
-		String messageByServer=client.getMessage();
 		
 		
-		if(messageByServer.equals("GOINGLEFT"))
+		//String messageByServer=client.getMessage();
+		
+		
+		/*if(messageByServer.equals("GOINGLEFT"))
 		{
 				Gmanager.tryToMoveLeft(playersMulti.get(1));
 				contPlayerTwo=(contPlayerTwo+1);
@@ -828,7 +840,15 @@ public class GamePanel extends JPanel implements KeyListener {
 			contPlayerTwo=(contPlayerTwo+1);
 		}
 		
+		if(keyPressed==0)
+		{
+			client.sendMessage("IDLE");
+		}
 		
+		*/
+
+		
+			
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
 		
@@ -881,7 +901,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 			
 	}//else
-}
+
 		
 		
 	
@@ -914,8 +934,8 @@ public class GamePanel extends JPanel implements KeyListener {
 			server.sendNumWorld(NumWorld);
 			checkConnection=true;
 		}
-		else {*/
-		
+		else {
+		*/
 		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
 		int shiftHeight = (this.getHeight() - (64 * world.getDimension())) / 2;
 		for (int i = 0; i < world.getDimension(); i++) {
@@ -970,9 +990,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			contPlayerTwo = 0;
 		}
 		
-		System.out.println(playersMulti.get(1).getX()+"    "+playersMulti.get(1).getY());
-		
-		String messageByClient=server.getMessage();
+		/*String messageByClient=server.getMessage();
 		
 		
 		if(messageByClient.equals("GOINGLEFT"))
@@ -1000,8 +1018,16 @@ public class GamePanel extends JPanel implements KeyListener {
 			contPlayerTwo=(contPlayerTwo+1);
 		}
 		
+		if(keyPressed==0)
+		{
+			server.sendMessage("IDLE");
+		}
+		*/
+		
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
+		
+		
 		
 		if (keyPressed == LEFT_KEY) {
 			Gmanager.tryToMoveLeft(playersMulti.get(0));
@@ -1052,8 +1078,7 @@ public class GamePanel extends JPanel implements KeyListener {
 						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 		}
 		
-	  //}
-}
+	  }
 	
 	//***********//
 	//MULTIPLAYER//
@@ -1362,6 +1387,7 @@ public class GamePanel extends JPanel implements KeyListener {
 							this);
 				contAnimation.set(posPlayer, (contAnimation.get(posPlayer) + 1) % (playerRightGreen.size() - 1));
 			}
+			
 			if (demoinitPosition.get(posPlayer).getX() - p.getX() > 0) {
 				p.setState(Status.LEFT);
 				if (p.getColor() == Color.GREEN)
@@ -1387,6 +1413,7 @@ public class GamePanel extends JPanel implements KeyListener {
 							this);
 				contAnimation.set(posPlayer, (contAnimation.get(posPlayer) + 1) % (playerRightGreen.size() - 1));
 			}
+			
 			if (demoinitPosition.get(posPlayer).getY() - p.getY() < 0) {
 				p.setState(Status.DOWN);
 				if (p.getColor() == Color.GREEN)
@@ -1409,6 +1436,7 @@ public class GamePanel extends JPanel implements KeyListener {
 							this);
 				contAnimation.set(posPlayer, (contAnimation.get(posPlayer) + 1) % (playerRightGreen.size() - 1));
 			}
+			
 			if (demoinitPosition.get(posPlayer).getY() - p.getY() > 0) {
 				p.setState(Status.UP);
 				if (p.getColor() == Color.GREEN)
@@ -1561,7 +1589,7 @@ public class GamePanel extends JPanel implements KeyListener {
 				tickCount = 0;
 				keyPressed = ESC_KEY;
 			}
-		} else if ((screenStatus == PLAY_SCREEN||screenStatus==INVITEFRIEND_SCREEN )&& !isPressed){
+		} else if ((screenStatus == PLAY_SCREEN||screenStatus==INVITEFRIEND_SCREEN ||screenStatus==JOIN_SCREEN)&& !isPressed){
 			if (e.getKeyCode() == RIGHT_KEY) {
 				keyPressed = RIGHT_KEY;
 				isPressed = true;

@@ -13,7 +13,7 @@ public class Server implements Runnable{
 	static Socket ClientSocket;
 	static DataOutputStream out;
 	static DataInputStream  in;
-	String message;
+	String message="IDLE";
 	boolean connected=false;
 	
 	
