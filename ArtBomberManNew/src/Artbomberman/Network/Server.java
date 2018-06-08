@@ -11,8 +11,9 @@ public class Server implements Runnable{
 
     static ServerSocket server;
 	static Socket ClientSocket;
-	static ObjectOutputStream out;
-	static ObjectInputStream  in;
+	static DataOutputStream out;
+	static DataInputStream  in;
+	String message;
 	boolean connected=false;
 	
 	
@@ -24,53 +25,50 @@ public class Server implements Runnable{
 	static int port=63789;
 	static boolean done=false;
 	
-	public Server(World world)
+	public Server()
 	{
-		this.world=world;
-		
 	}
 	
 	public void run() {
 		try {
 			server=new ServerSocket(port);
 			ClientSocket=server.accept();
-			out=new  ObjectOutputStream(ClientSocket.getOutputStream());
-			in=new ObjectInputStream(ClientSocket.getInputStream());
-			out.writeObject(world);
+			out=new  DataOutputStream(ClientSocket.getOutputStream());
+			in=new DataInputStream(ClientSocket.getInputStream());
 			connected=true;
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		while(true) {
 			try {
-				world=(World) in.readObject();
-			} catch (ClassNotFoundException | IOException e) {
+				message=in.readUTF();
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 	
-	public World getWorld () {
-		return this.world;
+	public String getMessage () {
+		return this.message;
 	}
 	
-	public void setWorld(World world) {
-		this.world=world;
-	}
-	
-	public void sendWorld(World world) {
+	public void sendMessage(String message) {
 		try {
-			out.writeObject(world);
+			out.writeUTF(message);
 		} catch (IOException e) {
+			e.printStackTrace();
+		};
+	}
+	
+	public void sendNumWorld(int NumWorld) {
+		try {
+			out.writeInt(NumWorld);
+		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	public boolean isConnected() {
 		return connected;
-	}
-
-	public void setConnected(boolean connected) {
-		this.connected = connected;
 	}
 }

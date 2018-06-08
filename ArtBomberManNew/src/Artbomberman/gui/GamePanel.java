@@ -32,7 +32,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	private static final int DIM_ASSET = 64;
 
 	private static final int INIT_WORLD_DIM = 13, NUM_STEP = 16, SPEED = 4, IDLE = 0, EXPLOSION = 48, DEMO_SCREEN = 0,
-			PLAY_SCREEN = 1, EDITOR_SCREEN = 2, SELECT_WORLD_SCREEN = 3,MULTIPLAYER_SCREEN=4 ,JOIN_SCREEN=5,INVITEFRIEND_SCREEN=6, NUM_WORLDS = 15;
+			PLAY_SCREEN = 1, EDITOR_SCREEN = 2, SELECT_WORLD_SCREEN = 3,JOIN_SCREEN=5,INVITEFRIEND_SCREEN=6, NUM_WORLDS = 15;
 
 	private ArrayList<Player> demoPlayers, players,playersMulti;
 	
@@ -51,6 +51,8 @@ public class GamePanel extends JPanel implements KeyListener {
 	private Toolkit tk;
 
 	private int screenStatus, contSelectionBlock = 0, contBlock = 0;
+	
+	private int NumWorld;
 
 	private int contUpdate = NUM_STEP - 1, update = NUM_STEP - 1, contMovement = 0;
 
@@ -63,7 +65,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	private Image title, ground, groundGreen, groundRed, groundBlue, ring1, ring2, ring3, ring4, ring5, editor, play,
 			bomb, backGroundEditor, editorTitle, up, down, save, clear, load, faceBlue, faceGreen, faceRed, minor,
 			major, one, two, three, zero, five, gameOver, win, home, oneRed, twoRed, threeRed, zeroRed, fourRed,
-			bombText,join,inviteFriends;
+			bombText,join,inviteFriends,waitingFriend1,waitingFriend2,waitingFriend3,waitingFriend4;
 
 	private static final int SHIFT_PLAY = 2, SHIFT_EDITOR = 3,SHIFT_JOIN=4,SHIFT_INVITE=5, TABLE_EDITOR = 7, BLUE = 0, GREEN = 1, RED = 2;
 
@@ -108,12 +110,15 @@ public class GamePanel extends JPanel implements KeyListener {
 
 	private boolean moved = false;
 	private boolean isServer=false;
+	private boolean isClient=false;
+	private boolean checkConnection=false;
 
 	private int blockX, blockY;
 	private Random random = new Random();
 	
 	Server server;
 	Client client;
+	int contForWaiting=0;
 	
 	
 
@@ -199,6 +204,10 @@ public class GamePanel extends JPanel implements KeyListener {
 		gameOver = tk.getImage(this.getClass().getResource("var//textGameOver.png"));
 		join = tk.getImage(this.getClass().getResource("var//join.png"));
 		inviteFriends = tk.getImage(this.getClass().getResource("var//invite.png"));
+		waitingFriend1= tk.getImage(this.getClass().getResource("var//waitingFriend1.png"));
+		waitingFriend2= tk.getImage(this.getClass().getResource("var//waitingFriend2.png"));
+		waitingFriend3= tk.getImage(this.getClass().getResource("var//waitingFriend3.png"));
+		waitingFriend4= tk.getImage(this.getClass().getResource("var//waitingFriend4.png"));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_BlueSelected.png")));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_GreenSelected.png")));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_RedSelected.png")));
@@ -324,6 +333,10 @@ public class GamePanel extends JPanel implements KeyListener {
 					
 					if(x>=joinX && x<=(joinX + join.getWidth(GamePanel.this)) && y>=joinY && y<=(joinY+join.getHeight(GamePanel.this))){
 						
+						screenStatus=JOIN_SCREEN;
+						isClient=true;
+						client=new Client();
+						new Thread(client).start();
 						winningPlayer=null;
 					}
 					
@@ -444,11 +457,12 @@ public class GamePanel extends JPanel implements KeyListener {
 							if (x >= worldX && x <= (worldX + worlds.get(i).getWidth(GamePanel.this)) && y >= worldY
 									&& y <= worldY + worlds.get(i).getHeight(GamePanel.this)) {
 								loadWorld(i * 5 + j);
-								if(isServer)
+								if(isServer) {
 								screenStatus = INVITEFRIEND_SCREEN;
+								NumWorld=i*5+j;
+								}
 								else
 								screenStatus= PLAY_SCREEN;
-								
 								contUpdate = NUM_STEP - 1;
 								contForRealPlayer = 0;
 								winningPlayer = null;
@@ -482,7 +496,8 @@ public class GamePanel extends JPanel implements KeyListener {
 		} catch (IOException e) {
 		}
 		initPosition.clear();
-		if(!isServer) {
+		
+		if(!isServer && !isClient) {
 		players = gamereader.getPlayers();
 		players.get(0).setState(Status.DOWN);
 		players.get(1).setState(Status.DOWN);
@@ -492,10 +507,8 @@ public class GamePanel extends JPanel implements KeyListener {
 		for (int i = 0; i < players.size(); i++) {
 			initPosition.add(new Position(players.get(i).getX(), players.get(i).getY()));
 		}
-		
 		}
-		else {
-			
+		else if(isServer){
 			playerOne=new Player(Color.BLUE,new Position(0,0));
 			playerTwo=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
 			playerOne.setState(Status.DOWN);
@@ -511,10 +524,27 @@ public class GamePanel extends JPanel implements KeyListener {
 			for (int i = 0; i < playersMulti.size(); i++) {
 				initPosition.add(new Position(playersMulti.get(i).getX(), playersMulti.get(i).getY()));
 			}
-			
-			server=new Server(world);
+			server=new Server();
 			new Thread(server).start();
 		}	
+		else {
+			
+			playerOne=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
+			playerTwo=new Player(Color.BLUE,new Position(0,0));
+			
+			playerOne.setState(Status.UP);
+			playerTwo.setState(Status.DOWN);
+			
+            playersMulti=new ArrayList<Player>();
+			playersMulti.add(playerOne);
+			playersMulti.add(playerTwo);
+			world=gamereader.getWorld();
+			world.setPlayer(playersMulti);
+			Gmanager = new Gmanager(playersMulti, world);
+			for (int i = 0; i < playersMulti.size(); i++) {
+				initPosition.add(new Position(playersMulti.get(i).getX(), playersMulti.get(i).getY()));
+			}
+		}
 }
 	
 	
@@ -690,12 +720,174 @@ public class GamePanel extends JPanel implements KeyListener {
 
 	private void join(Graphics g) {
 		
-	}
+		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
+			for (int j = 0; j < (this.getWidth() / DIM_ASSET) + 1; j++) {
+				int rand = random.nextInt(5) + 1;
+				if (rand == 1)
+					g.drawImage(ring1, j * DIM_ASSET, i * DIM_ASSET, this);
+				if (rand == 2)
+					g.drawImage(ring2, j * DIM_ASSET, i * DIM_ASSET, this);
+				if (rand == 3)
+					g.drawImage(ring3, j * DIM_ASSET, i * DIM_ASSET, this);
+				if (rand == 4)
+					g.drawImage(ring4, j * DIM_ASSET, i * DIM_ASSET, this);
+				if (rand == 5)
+					g.drawImage(ring5, j * DIM_ASSET, i * DIM_ASSET, this);
+			}
+		}
+		
+		if(!client.isConnected())
+		{
+			//DISEGNA IMMAGINE WAITING
+			g.drawImage(waitingFriend1,DIM_ASSET, DIM_ASSET, this);
+		}
+		else if(client.isConnected() && !checkConnection)
+		{
+			NumWorld=client.getNumWorld();
+			loadWorld(NumWorld);
+			checkConnection=true;
+		}
+
+		else {
+			
+		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
+		int shiftHeight = (this.getHeight() - (64 * world.getDimension())) / 2;
+		for (int i = 0; i < world.getDimension(); i++) {
+			for (int j = 0; j < world.getDimension(); j++) {
+				if (world.getBlockMatrix()[i][j].getColor() == Color.GREY && !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(ground, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.BLUE && !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(groundBlue, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.RED && !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(groundRed, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.GREEN
+						&& !world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(groundGreen, (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.BLUE && world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(blocks.get(BLUE), (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.RED && world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(blocks.get(RED), (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+				if (world.getBlockMatrix()[i][j].getColor() == Color.GREEN && world.getBlockMatrix()[i][j].isPhysical())
+					g.drawImage(blocks.get(GREEN), (j + shiftWidth / 64) * DIM_ASSET,
+							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+			}
+		}
+		
+		g.drawImage(home, 22 * DIM_ASSET, 2 * DIM_ASSET, this);
+		
+		if(winningPlayer==null) {
+		for (int i = 0; i < playersMulti.size(); i++) {
+			ArrayList<Position> bombPosition = playersMulti.get(i).getBombPosition();
+			for (int j = 0; j < bombPosition.size(); j++) {
+				g.drawImage(bomb, ((bombPosition.get(j).getX()) + shiftWidth / DIM_ASSET) * DIM_ASSET,
+						((int) (bombPosition.get(j).getY() + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET,
+						this);
+			}
+		}
+		
+		if (contPlayerOne == NUM_STEP) {
+			initPosition.set(0, new Position(playersMulti.get(0).getX(), playersMulti.get(0).getY()));
+			isPressed = false;
+			contPlayerOne = 0;
+		}
+		
+		if (contPlayerTwo == NUM_STEP) {
+			initPosition.set(1, new Position(playersMulti.get(1).getX(), playersMulti.get(1).getY()));
+			contPlayerTwo = 0;
+		}
+		
+		System.out.println(playersMulti.get(1).getX()+"    "+playersMulti.get(1).getY());
+		
+		String messageByServer=client.getMessage();
+		
+		
+		if(messageByServer.equals("GOINGLEFT"))
+		{
+				Gmanager.tryToMoveLeft(playersMulti.get(1));
+				contPlayerTwo=(contPlayerTwo+1);
+		}
+		if(messageByServer.equals("GOINGRIGHT"))
+		{
+			Gmanager.tryToMoveRight(playersMulti.get(1));
+			contPlayerTwo=(contPlayerTwo+1);
+		}	
+		if(messageByServer.equals("GOINGUP"))
+		{
+			Gmanager.tryToMoveUp(playersMulti.get(1));
+			contPlayerTwo=(contPlayerTwo+1);
+		}	
+		if(messageByServer.equals("GOINGDOWN"))
+		{
+			Gmanager.tryToMoveRight(playersMulti.get(1));
+			contPlayerTwo=(contPlayerTwo+1);
+		}
+		
+		
+		if (isPressed)
+			contPlayerOne= (contPlayerOne + 1);
+		
+		if (keyPressed == LEFT_KEY) {
+			Gmanager.tryToMoveLeft(playersMulti.get(0));
+			//client.sendMessage("GOINGLEFT");
+			keyPressed = 0;
+		}
+		if (keyPressed == RIGHT_KEY) {
+			Gmanager.tryToMoveRight(playersMulti.get(0));
+			//client.sendMessage("GOINGRIGHT");
+			keyPressed = 0;
+		}
+		if (keyPressed == UP_KEY) {
+			Gmanager.tryToMoveUp(playersMulti.get(0));
+			//client.sendMessage("GOINGUP");
+			keyPressed = 0;
+		}
+		if (keyPressed == DOWN_KEY) {
+			Gmanager.tryToMoveDown(playersMulti.get(0));
+			//client.sendMessage("GOINGDOWN");
+			keyPressed = 0;
+		}
+		if (keyPressed == BOMB_KEY) {
+			playersMulti.get(0).placeBomb(playersMulti.get(0).getPosition());
+			//client.sendMessage("PLACEBOMBE");
+			keyPressed = 0;
+			isPressed = false;
+		}
+		
+		Gmanager.tryToReloadTank(playersMulti.get(0), initPosition.get(0));
+		Gmanager.tryToReloadTank(playersMulti.get(1), initPosition.get(1));
+		Gmanager.tryToExplodeAll(EXPLOSION);
+		}
+		
+		drawPlayer(playersMulti.get(0), g, shiftHeight, shiftWidth, initPosition, contPlayerOne);
+		drawPlayer(playersMulti.get(1), g, shiftHeight, shiftWidth, initPosition, contPlayerTwo);
+		
+		drawPlayerPercentual(playersMulti.get(0), 3, 3, g);
+		drawPlayerPercentual(playersMulti.get(1), 3, 5, g);
+		
+		drawBombText(playersMulti.get(0), 1, 9, g);
+		if (winningPlayer != null) {
+			if (winningPlayer.equals(playersMulti.get(0)))
+				g.drawImage(win, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
+						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+			else
+				g.drawImage(gameOver, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
+						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+		}
+			
+	}//else
+}
+		
+		
 	
 	//***********//
 	//MULTIPLAYER//
 	//***********//
-	
 	private void inviteFriend(Graphics g) {
 	
 		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
@@ -713,6 +905,16 @@ public class GamePanel extends JPanel implements KeyListener {
 					g.drawImage(ring5, j * DIM_ASSET, i * DIM_ASSET, this);
 			}
 		}
+		
+		/*if(!server.isConnected()) {
+			//DISEGNA L'IMMAGINE DI LOADING
+		}
+		else if(server.isConnected() && !checkConnection)
+		{
+			server.sendNumWorld(NumWorld);
+			checkConnection=true;
+		}
+		else {*/
 		
 		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
 		int shiftHeight = (this.getHeight() - (64 * world.getDimension())) / 2;
@@ -742,6 +944,7 @@ public class GamePanel extends JPanel implements KeyListener {
 							((int) (i + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 			}
 		}
+		
 		g.drawImage(home, 22 * DIM_ASSET, 2 * DIM_ASSET, this);
 		
 		if(winningPlayer==null) {
@@ -761,33 +964,75 @@ public class GamePanel extends JPanel implements KeyListener {
 			isPressed = false;
 			contPlayerOne = 0;
 		}
-		System.out.println(contPlayerOne);
+		
+		if (contPlayerTwo == NUM_STEP) {
+			initPosition.set(1, new Position(playersMulti.get(1).getX(), playersMulti.get(1).getY()));
+			contPlayerTwo = 0;
+		}
+		
+		System.out.println(playersMulti.get(1).getX()+"    "+playersMulti.get(1).getY());
+		
+		String messageByClient=server.getMessage();
+		
+		
+		if(messageByClient.equals("GOINGLEFT"))
+		{
+				
+				Gmanager.tryToMoveLeft(playersMulti.get(1));
+				contPlayerTwo=(contPlayerTwo+1);
+		}
+		
+		if(messageByClient.equals("GOINGRIGHT"))
+		{
+			Gmanager.tryToMoveRight(playersMulti.get(1));
+			contPlayerTwo=(contPlayerTwo+1);
+		}
+		
+		if(messageByClient.equals("GOINGUP"))
+		{
+			Gmanager.tryToMoveUp(playersMulti.get(1));
+			contPlayerTwo=(contPlayerTwo+1);
+		}	
+		
+		if(messageByClient.equals("GOINGDOWN"))
+		{
+			Gmanager.tryToMoveRight(playersMulti.get(1));
+			contPlayerTwo=(contPlayerTwo+1);
+		}
+		
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
 		
 		if (keyPressed == LEFT_KEY) {
 			Gmanager.tryToMoveLeft(playersMulti.get(0));
+			//server.sendMessage("GOINGLEFT");
 			keyPressed = 0;
 		}
+		
 		if (keyPressed == RIGHT_KEY) {
 			Gmanager.tryToMoveRight(playersMulti.get(0));
+			//server.sendMessage("GOINGRIGHT");
 			keyPressed = 0;
 		}
 		if (keyPressed == UP_KEY) {
 			Gmanager.tryToMoveUp(playersMulti.get(0));
+			//server.sendMessage("GOINGUP");
 			keyPressed = 0;
 		}
 		if (keyPressed == DOWN_KEY) {
 			Gmanager.tryToMoveDown(playersMulti.get(0));
+			//server.sendMessage("GOINGDOWN");
 			keyPressed = 0;
 		}
 		if (keyPressed == BOMB_KEY) {
 			playersMulti.get(0).placeBomb(playersMulti.get(0).getPosition());
+			//server.sendMessage("PLACEBOMBE");
 			keyPressed = 0;
 			isPressed = false;
 		}
 		
 		Gmanager.tryToReloadTank(playersMulti.get(0), initPosition.get(0));
+		Gmanager.tryToReloadTank(playersMulti.get(1), initPosition.get(1));
 		Gmanager.tryToExplodeAll(EXPLOSION);
 		}
 		
@@ -806,7 +1051,9 @@ public class GamePanel extends JPanel implements KeyListener {
 				g.drawImage(gameOver, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
 						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 		}
-	}
+		
+	  //}
+}
 	
 	//***********//
 	//MULTIPLAYER//
@@ -939,6 +1186,7 @@ public class GamePanel extends JPanel implements KeyListener {
 						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 		}
 	}
+
 
 	private void paintSelectWorldScreen(Graphics g) {
 		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
@@ -1087,6 +1335,7 @@ public class GamePanel extends JPanel implements KeyListener {
 							((int) (p.getY() + Math.ceil((double) localHeight / 64))) * DIM_ASSET, this);
 			}
 			contAnimation.set(posPlayer, 0);
+			
 		} else {
 			if (demoinitPosition.get(posPlayer).getX() - p.getX() < 0) {
 				p.setState(Status.RIGHT);

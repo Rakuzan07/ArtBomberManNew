@@ -8,62 +8,56 @@ import Artbomberman.logic.World;
 public class Client implements Runnable{
 	
 	static Socket client;
-	static ObjectInputStream in;
-	static ObjectOutputStream out;
+	static DataOutputStream out;
+	static DataInputStream  in;
+	String message;
+	int NumWorld;
 	boolean connected=false;
-
 	boolean serverNotFounded=false;
-	World world;
 	
-	public static void main(String[] args) throws UnknownHostException, IOException {
-		System.out.println("Connecting");
-		
-	}
+	
 	
 	public void run() {
 		
 		try {
 			client=new Socket("localHost",63789);
-			in=new ObjectInputStream(client.getInputStream());
-			out=new ObjectOutputStream(client.getOutputStream());
-			world=(World)in.readObject();
+			in=new DataInputStream(client.getInputStream());
+			out=new DataOutputStream(client.getOutputStream());
 			connected=true;
-		} catch (IOException | ClassNotFoundException e) {
+			NumWorld=in.readInt();
+		} catch (IOException e) {
 			serverNotFounded=true;
 		}
 		
 		while(true)
 		{
 			try {
-				world=(World)in.readObject();
-			} catch (IOException | ClassNotFoundException e) {
-				serverNotFounded=true;
+				message=in.readUTF();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 	
-	World getWorld() {
-		return this.world;
+	public String getMessage() {
+		return this.message;
 	}
 	
-	public void setWorld(World world) {
-		this.world=world;
+	public int getNumWorld() {
+		return this.NumWorld;
 	}
 	
-	public void sendWorld(World world) {
+	public void sendMessage(String message) {
 		try {
-			out.writeObject(world);
+			out.writeUTF(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	
 	public boolean isConnected() {
 		return connected;
-	}
-
-	public void setConnected(boolean connected) {
-		this.connected = connected;
 	}
 
 
