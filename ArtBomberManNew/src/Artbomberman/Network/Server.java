@@ -13,14 +13,11 @@ public class Server implements Runnable{
 	static Socket ClientSocket;
 	static DataOutputStream out;
 	static DataInputStream  in;
-	String message="IDLE";
+	String message="";
 	boolean connected=false;
 	
 	
 
-	World world;
-	Player playerOne;
-	Player playerTwo;
 	
 	static int port=63789;
 	static boolean done=false;
@@ -39,22 +36,23 @@ public class Server implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		while(true) {
-			try {
-				message=in.readUTF();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	}
+	
+	public void readMessage() {
+		 try {
+			message=in.readUTF();
+		}catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	public String getMessage () {
+	public String getMessage (){
 		return this.message;
 	}
 	
-	public void sendMessage(String message) {
+	public void sendMessage(String messages) {
 		try {
-			out.writeUTF(message);
+			out.writeUTF(messages);
 		} catch (IOException e) {
 			e.printStackTrace();
 		};

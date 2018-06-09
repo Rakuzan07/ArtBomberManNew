@@ -10,7 +10,7 @@ public class Client implements Runnable{
 	static Socket client;
 	static DataOutputStream out;
 	static DataInputStream  in;
-	String message="IDLE";
+	String message="";
 	int NumWorld;
 	boolean connected=false;
 	boolean serverNotFounded=false;
@@ -28,15 +28,14 @@ public class Client implements Runnable{
 		} catch (IOException e) {
 			serverNotFounded=true;
 		}
-		
-		/*while(true)
-		{
-			try {
-			   message=in.readUTF();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}*/
+	}
+	
+	public void readMessage() {
+	 try {
+		message=in.readUTF();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
 	}
 	
 	public String getMessage() {
@@ -47,9 +46,9 @@ public class Client implements Runnable{
 		return this.NumWorld;
 	}
 	
-	public void sendMessage(String message) {
+	public void sendMessage(String messages) {
 		try {
-			out.writeUTF(message);
+			out.writeUTF(messages);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

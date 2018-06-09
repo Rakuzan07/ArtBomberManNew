@@ -112,6 +112,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	private boolean isServer=false;
 	private boolean isClient=false;
 	private boolean checkConnection=false;
+	private boolean movingMultiPlayer=false;
 
 	private int blockX, blockY;
 	private Random random = new Random();
@@ -119,6 +120,9 @@ public class GamePanel extends JPanel implements KeyListener {
 	Server server;
 	Client client;
 	int contForWaiting=0;
+	int contToReceiveMessage=0;
+	String messageByClient;
+	String messageByServer;
 	
 	
 
@@ -333,11 +337,10 @@ public class GamePanel extends JPanel implements KeyListener {
 					
 					if(x>=joinX && x<=(joinX + join.getWidth(GamePanel.this)) && y>=joinY && y<=(joinY+join.getHeight(GamePanel.this))){
 						
-						screenStatus=SELECT_WORLD_SCREEN;
-						//screenStatus=JOIN_SCREEN;
+						screenStatus=JOIN_SCREEN;
 						isClient=true;
-						//client=new Client();
-						//new Thread(client).start();
+						client=new Client();
+						new Thread(client).start();
 						winningPlayer=null;
 					}
 					
@@ -516,11 +519,9 @@ public class GamePanel extends JPanel implements KeyListener {
 		
 		else if(isClient){
 			
-			//playerOne=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
-			//playerTwo=new Player(Color.BLUE,new Position(0,0));
+			playerOne=new Player(Color.GREEN,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
+			playerTwo=new Player(Color.BLUE,new Position(0,0));
 				
-			playerOne=new Player(Color.GREEN,new Position(0,0));
-			playerTwo=new Player(Color.BLUE,new Position(INIT_WORLD_DIM-1,INIT_WORLD_DIM-1));
 
 			playerOne.setState(Status.DOWN);
 			playerTwo.setState(Status.DOWN);
@@ -541,9 +542,9 @@ public class GamePanel extends JPanel implements KeyListener {
 				
 					
 					playerOne.setState(Status.DOWN);
-					playerTwo.setState(Status.UP);
+					playerTwo.setState(Status.DOWN);
 					
-		            System.out.println(playerOne);
+		     
 		            playersMulti=new ArrayList<Player>();
 					playersMulti.add(playerOne);
 					playersMulti.add(playerTwo);
@@ -747,20 +748,21 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		
-		/*if(!client.isConnected())
+		if(!client.isConnected())
 		{
 			//DISEGNA IMMAGINE WAITING
 			g.drawImage(waitingFriend1,DIM_ASSET, DIM_ASSET, this);
+			
 		}
-		elseif(!checkConnection)//&& client.isConnected())
+		else if(!checkConnection && client.isConnected())
 		{
-			//NumWorld=client.getNumWorld();
-			NumWorld=0;
+			NumWorld=client.getNumWorld();
 			loadWorld(NumWorld);
+			client.sendMessage("ciao");
 			checkConnection=true;
 		}
 
-		else {*/
+		else {
 		
 		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
 		int shiftHeight = (this.getHeight() - (64 * world.getDimension())) / 2;
@@ -812,72 +814,82 @@ public class GamePanel extends JPanel implements KeyListener {
 		if (contPlayerTwo == NUM_STEP) {
 			initPosition.set(1, new Position(playersMulti.get(1).getX(), playersMulti.get(1).getY()));
 			contPlayerTwo = 0;
+			 movingMultiPlayer=false;
+			 
 		}
 		
 		
-		
-		//String messageByServer=client.getMessage();
-		
-		
-		/*if(messageByServer.equals("GOINGLEFT"))
-		{
-				Gmanager.tryToMoveLeft(playersMulti.get(1));
-				contPlayerTwo=(contPlayerTwo+1);
-		}
-		if(messageByServer.equals("GOINGRIGHT"))
-		{
-			Gmanager.tryToMoveRight(playersMulti.get(1));
-			contPlayerTwo=(contPlayerTwo+1);
-		}	
-		if(messageByServer.equals("GOINGUP"))
-		{
-			Gmanager.tryToMoveUp(playersMulti.get(1));
-			contPlayerTwo=(contPlayerTwo+1);
-		}	
-		if(messageByServer.equals("GOINGDOWN"))
-		{
-			Gmanager.tryToMoveRight(playersMulti.get(1));
-			contPlayerTwo=(contPlayerTwo+1);
-		}
-		
-		if(keyPressed==0)
-		{
-			client.sendMessage("IDLE");
-		}
-		
-		*/
-
-		
-			
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
 		
+		if(keyPressed==0)
+			client.sendMessage("");
+		
 		if (keyPressed == LEFT_KEY) {
 			Gmanager.tryToMoveLeft(playersMulti.get(0));
-			//client.sendMessage("GOINGLEFT");
+			client.sendMessage("GOINGLEFT");
 			keyPressed = 0;
 		}
 		if (keyPressed == RIGHT_KEY) {
 			Gmanager.tryToMoveRight(playersMulti.get(0));
-			//client.sendMessage("GOINGRIGHT");
+			client.sendMessage("GOINGRIGHT");
 			keyPressed = 0;
 		}
 		if (keyPressed == UP_KEY) {
 			Gmanager.tryToMoveUp(playersMulti.get(0));
-			//client.sendMessage("GOINGUP");
+			client.sendMessage("GOINGUP");
 			keyPressed = 0;
 		}
 		if (keyPressed == DOWN_KEY) {
 			Gmanager.tryToMoveDown(playersMulti.get(0));
-			//client.sendMessage("GOINGDOWN");
+			client.sendMessage("GOINGDOWN");
 			keyPressed = 0;
 		}
 		if (keyPressed == BOMB_KEY) {
 			playersMulti.get(0).placeBomb(playersMulti.get(0).getPosition());
-			//client.sendMessage("PLACEBOMBE");
+			client.sendMessage("PLACEBOMBE");
 			keyPressed = 0;
 			isPressed = false;
 		}
+		
+		
+		client.readMessage();
+
+		messageByServer=client.getMessage();
+
+		
+		if(movingMultiPlayer)
+			contPlayerTwo=(contPlayerTwo+1);
+		
+		
+		if(messageByServer.equals("GOINGLEFT") && !movingMultiPlayer)
+		{
+				Gmanager.tryToMoveLeft(playersMulti.get(1));
+				movingMultiPlayer=true;
+		}
+		if(messageByServer.equals("GOINGRIGHT") && !movingMultiPlayer)
+		{
+			Gmanager.tryToMoveRight(playersMulti.get(1));
+			movingMultiPlayer=true;
+		}	
+		if(messageByServer.equals("GOINGUP") && !movingMultiPlayer)
+		{
+			Gmanager.tryToMoveUp(playersMulti.get(1));
+			movingMultiPlayer=true;
+		}	
+		if(messageByServer.equals("GOINGDOWN") && !movingMultiPlayer)
+		{
+			Gmanager.tryToMoveDown(playersMulti.get(1));
+			movingMultiPlayer=true;
+		}
+		
+		if(messageByServer.equals("PLACEBOMBE") && !movingMultiPlayer)
+		{
+			playersMulti.get(1).placeBomb(playersMulti.get(1).getPosition());
+			messageByServer="";
+		}
+		
+		
 		
 		Gmanager.tryToReloadTank(playersMulti.get(0), initPosition.get(0));
 		Gmanager.tryToReloadTank(playersMulti.get(1), initPosition.get(1));
@@ -901,6 +913,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 			
 	}//else
+	}
 
 		
 		
@@ -908,6 +921,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	//***********//
 	//MULTIPLAYER//
 	//***********//
+
 	private void inviteFriend(Graphics g) {
 	
 		for (int i = 0; i < (this.getHeight() / DIM_ASSET) + 1; i++) {
@@ -926,16 +940,17 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		
-		/*if(!server.isConnected()) {
+		if(!server.isConnected()) {
 			//DISEGNA L'IMMAGINE DI LOADING
 		}
 		else if(server.isConnected() && !checkConnection)
 		{
 			server.sendNumWorld(NumWorld);
+			server.readMessage();
+			messageByClient=server.getMessage();
 			checkConnection=true;
 		}
 		else {
-		*/
 		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
 		int shiftHeight = (this.getHeight() - (64 * world.getDimension())) / 2;
 		for (int i = 0; i < world.getDimension(); i++) {
@@ -977,7 +992,8 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		
-		//world=server.getWorld();
+		
+		
 		
 		if (contPlayerOne == NUM_STEP) {
 			initPosition.set(0, new Position(playersMulti.get(0).getX(), playersMulti.get(0).getY()));
@@ -988,73 +1004,85 @@ public class GamePanel extends JPanel implements KeyListener {
 		if (contPlayerTwo == NUM_STEP) {
 			initPosition.set(1, new Position(playersMulti.get(1).getX(), playersMulti.get(1).getY()));
 			contPlayerTwo = 0;
+			movingMultiPlayer=false;
 		}
 		
-		/*String messageByClient=server.getMessage();
 		
-		
-		if(messageByClient.equals("GOINGLEFT"))
-		{
-				
-				Gmanager.tryToMoveLeft(playersMulti.get(1));
-				contPlayerTwo=(contPlayerTwo+1);
-		}
-		
-		if(messageByClient.equals("GOINGRIGHT"))
-		{
-			Gmanager.tryToMoveRight(playersMulti.get(1));
-			contPlayerTwo=(contPlayerTwo+1);
-		}
-		
-		if(messageByClient.equals("GOINGUP"))
-		{
-			Gmanager.tryToMoveUp(playersMulti.get(1));
-			contPlayerTwo=(contPlayerTwo+1);
-		}	
-		
-		if(messageByClient.equals("GOINGDOWN"))
-		{
-			Gmanager.tryToMoveRight(playersMulti.get(1));
-			contPlayerTwo=(contPlayerTwo+1);
-		}
-		
-		if(keyPressed==0)
-		{
-			server.sendMessage("IDLE");
-		}
-		*/
 		
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
 		
-		
+		if(keyPressed==0)
+			server.sendMessage("");
 		
 		if (keyPressed == LEFT_KEY) {
 			Gmanager.tryToMoveLeft(playersMulti.get(0));
-			//server.sendMessage("GOINGLEFT");
+			server.sendMessage("GOINGLEFT");
 			keyPressed = 0;
 		}
 		
 		if (keyPressed == RIGHT_KEY) {
 			Gmanager.tryToMoveRight(playersMulti.get(0));
-			//server.sendMessage("GOINGRIGHT");
+			server.sendMessage("GOINGRIGHT");
 			keyPressed = 0;
 		}
 		if (keyPressed == UP_KEY) {
 			Gmanager.tryToMoveUp(playersMulti.get(0));
-			//server.sendMessage("GOINGUP");
+			server.sendMessage("GOINGUP");
 			keyPressed = 0;
 		}
 		if (keyPressed == DOWN_KEY) {
 			Gmanager.tryToMoveDown(playersMulti.get(0));
-			//server.sendMessage("GOINGDOWN");
+			server.sendMessage("GOINGDOWN");
 			keyPressed = 0;
 		}
 		if (keyPressed == BOMB_KEY) {
 			playersMulti.get(0).placeBomb(playersMulti.get(0).getPosition());
-			//server.sendMessage("PLACEBOMBE");
+			server.sendMessage("PLACEBOMBE");
 			keyPressed = 0;
 			isPressed = false;
+		}
+		
+		
+		
+		server.readMessage();
+		messageByClient=server.getMessage();
+
+	
+		if(movingMultiPlayer)
+		contPlayerTwo=(contPlayerTwo+1);
+		
+		
+		if(messageByClient.equals("GOINGLEFT") && !movingMultiPlayer)
+		{
+				
+			Gmanager.tryToMoveLeft(playersMulti.get(1));
+			movingMultiPlayer=true;
+				
+		}
+		
+		if(messageByClient.equals("GOINGRIGHT")&& !movingMultiPlayer)
+		{
+			Gmanager.tryToMoveRight(playersMulti.get(1));
+			movingMultiPlayer=true;
+		}
+		
+		if(messageByClient.equals("GOINGUP")&& !movingMultiPlayer)
+		{
+			Gmanager.tryToMoveUp(playersMulti.get(1));
+			movingMultiPlayer=true;
+		}	
+		
+		if(messageByClient.equals("GOINGDOWN")&& !movingMultiPlayer)
+		{
+			Gmanager.tryToMoveDown(playersMulti.get(1));
+			movingMultiPlayer=true;
+		}
+		
+		if(messageByClient.equals("PLACEBOMBE") && !movingMultiPlayer)
+		{
+			playersMulti.get(1).placeBomb(playersMulti.get(1).getPosition());
+			messageByClient="";
 		}
 		
 		Gmanager.tryToReloadTank(playersMulti.get(0), initPosition.get(0));
@@ -1079,7 +1107,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 		
 	  }
-	
+	}
 	//***********//
 	//MULTIPLAYER//
 	//***********//
