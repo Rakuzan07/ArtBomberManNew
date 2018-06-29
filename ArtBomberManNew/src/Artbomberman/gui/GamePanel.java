@@ -452,6 +452,11 @@ public class GamePanel extends JPanel implements KeyListener {
 					if (x >= homeX && x <= (homeX + home.getWidth(GamePanel.this)) && y >= homeY
 							&& y <= homeY + home.getHeight(GamePanel.this))
 						screenStatus = DEMO_SCREEN;
+					
+					if(multiplayer)
+					{
+						GamePanel.this.closeSocket();
+					}
 				}
 
 				if (screenStatus == SELECT_WORLD_SCREEN) {
@@ -1712,11 +1717,19 @@ public class GamePanel extends JPanel implements KeyListener {
 			{
 				client.sendMessage("CLOSING");
 				client.close();
+				isClient=false;
+				checkConnection=false;
+				multiplayer=false;
+				client.setConnected(false);
 			}
 		else if(multiplayer && isServer)
 			{
 				server.sendMessage("CLOSING");
 				server.close();
+				isServer=false;
+				checkConnection=false;
+				multiplayer=false;
+				server.setConnected(false);
 			}
 	}
 }
