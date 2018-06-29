@@ -191,6 +191,10 @@ public class GamePanel extends JPanel implements KeyListener {
 		blocks.add(tk.getImage(this.getClass().getResource("block//block_Blue.png")));
 		blocks.add(tk.getImage(this.getClass().getResource("block//block_Green.png")));
 		blocks.add(tk.getImage(this.getClass().getResource("block//block_Red.png")));
+		waitingFriend1= tk.getImage(this.getClass().getResource("var//waitingFriend1.png"));
+	    waitingFriend2= tk.getImage(this.getClass().getResource("var//waitingFriend2.png"));
+	    waitingFriend3= tk.getImage(this.getClass().getResource("var//waitingFriend3.png"));
+	    waitingFriend4= tk.getImage(this.getClass().getResource("var//waitingFriend4.png"));
 		for (int i = 0; i < NUM_WORLDS; i++) {
 			worlds.add(tk.getImage(this.getClass().getResource("Worlds//world" + (i + 1) + ".png")));
 		}
@@ -444,17 +448,19 @@ public class GamePanel extends JPanel implements KeyListener {
 					win = tk.getImage(this.getClass().getResource("var//Win.png"));
 					gameOver = tk.getImage(this.getClass().getResource("var//textGameOver.png"));
 				}
+				
 				if (screenStatus == PLAY_SCREEN || screenStatus==JOIN_SCREEN || screenStatus==INVITEFRIEND_SCREEN) {
 					int homeX = 22 * DIM_ASSET;
 					int homeY = 2 * DIM_ASSET;
 					if (x >= homeX && x <= (homeX + home.getWidth(GamePanel.this)) && y >= homeY
 							&& y <= homeY + home.getHeight(GamePanel.this))
-						screenStatus = DEMO_SCREEN;
-					
-					if(multiplayer)
-					{
-						GamePanel.this.closeSocket();
-					}
+						{
+							screenStatus = DEMO_SCREEN;
+							if(multiplayer)
+							{
+								GamePanel.this.closeSocket();
+							}
+						}
 				}
 
 				if (screenStatus == SELECT_WORLD_SCREEN) {
@@ -955,6 +961,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			else
 				g.drawImage(gameOver, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
 						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
+			
 		}
 			
 	}//else
@@ -1185,6 +1192,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		
 	  }
 	}
+	
 	//***********//
 	//MULTIPLAYER//
 	//***********//
@@ -1730,7 +1738,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	
 	
 	public void closeSocket() {
-		if(multiplayer && isClient)
+		if(multiplayer && isClient && winningPlayer==null)
 			{
 				client.sendMessage("CLOSING");
 				client.close();
@@ -1739,9 +1747,25 @@ public class GamePanel extends JPanel implements KeyListener {
 				multiplayer=false;
 				client.setConnected(false);
 			}
-		else if(multiplayer && isServer)
+		else if(multiplayer && isClient && winningPlayer!=null)
+			{
+				client.close();
+				isClient=false;
+				checkConnection=false;
+				multiplayer=false;
+				client.setConnected(false);
+			}
+		else if(multiplayer && isServer && winningPlayer==null)
 			{
 				server.sendMessage("CLOSING");
+				server.close();
+				isServer=false;
+				checkConnection=false;
+				multiplayer=false;
+				server.setConnected(false);
+			}
+		else if(multiplayer && isServer && winningPlayer!=null)
+			{
 				server.close();
 				isServer=false;
 				checkConnection=false;
