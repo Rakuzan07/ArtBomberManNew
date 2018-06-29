@@ -183,29 +183,8 @@ public class GamePanel extends JPanel implements KeyListener {
 		ring5 = tk.getImage(this.getClass().getResource("resources//entry//ring5.png"));
 		editor = tk.getImage(this.getClass().getResource("resources//entry//editor.png"));
 		bomb = tk.getImage(this.getClass().getResource("resources//player//bomb.png"));
-		
-		/*faceRed = tk.getImage(this.getClass().getResource("var//playerFaceRed.png"));
-		faceGreen = tk.getImage(this.getClass().getResource("var//playerFaceGreen.png"));
-		faceBlue = tk.getImage(this.getClass().getResource("var//playerFaceBlue.png"));
-		minor = tk.getImage(this.getClass().getResource("var//minor.png"));
-		major = tk.getImage(this.getClass().getResource("var//major.png"));
-		one = tk.getImage(this.getClass().getResource("var//number1.png"));
-		two = tk.getImage(this.getClass().getResource("var//number2.png"));
-		three = tk.getImage(this.getClass().getResource("var//number3.png"));
-		five = tk.getImage(this.getClass().getResource("var//number5.png"));
-		zero = tk.getImage(this.getClass().getResource("var//number0.png"));
-		oneRed = tk.getImage(this.getClass().getResource("var//number1red.png"));
-		twoRed = tk.getImage(this.getClass().getResource("var//number2red.png"));
-		threeRed = tk.getImage(this.getClass().getResource("var//number3red.png"));
-		fourRed = tk.getImage(this.getClass().getResource("var//number4red.png"));
-		bombText = tk.getImage(this.getClass().getResource("var//bombText.png"));
-		zeroRed = tk.getImage(this.getClass().getResource("var//number0red.png"));
-		home = tk.getImage(this.getClass().getResource("var//home.png"));
-		win = tk.getImage(this.getClass().getResource("var//Win.png"));
-		gameOver = tk.getImage(this.getClass().getResource("var//textGameOver.png"));*/
 		join = tk.getImage(this.getClass().getResource("var//join.png"));
 		inviteFriends = tk.getImage(this.getClass().getResource("var//invite.png"));
-		
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_BlueSelected.png")));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_GreenSelected.png")));
 		selectedBlocks.add(tk.getImage(this.getClass().getResource("block//block_RedSelected.png")));
@@ -464,12 +443,6 @@ public class GamePanel extends JPanel implements KeyListener {
 					home = tk.getImage(this.getClass().getResource("var//home.png"));
 					win = tk.getImage(this.getClass().getResource("var//Win.png"));
 					gameOver = tk.getImage(this.getClass().getResource("var//textGameOver.png"));
-					if(screenStatus == JOIN_SCREEN || screenStatus==INVITEFRIEND_SCREEN) {
-						waitingFriend1= tk.getImage(this.getClass().getResource("var//waitingFriend1.png"));
-						waitingFriend2= tk.getImage(this.getClass().getResource("var//waitingFriend2.png"));
-						waitingFriend3= tk.getImage(this.getClass().getResource("var//waitingFriend3.png"));
-						waitingFriend4= tk.getImage(this.getClass().getResource("var//waitingFriend4.png"));
-					}
 				}
 				if (screenStatus == PLAY_SCREEN || screenStatus==JOIN_SCREEN || screenStatus==INVITEFRIEND_SCREEN) {
 					int homeX = 22 * DIM_ASSET;
