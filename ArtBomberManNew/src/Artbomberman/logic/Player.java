@@ -66,7 +66,7 @@ public class Player {
 		inkTank=value;
 	}
 	
-	public void reloadTank() {
+	public void reloadTank() { //CARICA BOMBE
 		if (inkTank == 0)
 			inkTank = numBomb;
 	}
@@ -93,7 +93,7 @@ public class Player {
 		return position;
 	}
 	
-	public boolean placeBomb(Position p) {
+	public boolean placeBomb(Position p) { //PIAZZA LA BOMBA
 		Position position=new Position(p.getX(),p.getY());
 		if(inkTank>0) {
 			boolean okInsert=true;
@@ -114,7 +114,7 @@ public class Player {
 		return contBomb;
 	}
 	
-	public void increaseContBomb() {
+	public void increaseContBomb() { //INCREMENTA TUTTI I CONTATORI CORRISPONDENTI AD OGNI BOMBA E QUANDO UN DETERMINATO CONTATORE RAGGIUNGE UN INTERO LA BOMBA ESPLODE
 		for(int i=0;i<contBomb.size();i++) {
 			contBomb.set(i, contBomb.get(i)+1);
 		}

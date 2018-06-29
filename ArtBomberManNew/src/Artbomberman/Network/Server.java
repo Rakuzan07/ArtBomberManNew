@@ -28,13 +28,13 @@ public class Server implements Runnable{
 	
 	public void run() {
 		try {
+			
 			server=new ServerSocket(port);
 			ClientSocket=server.accept();
 			out=new  DataOutputStream(ClientSocket.getOutputStream());
 			in=new DataInputStream(ClientSocket.getInputStream());
 			connected=true;
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -81,7 +81,6 @@ public class Server implements Runnable{
 			server.close();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 	

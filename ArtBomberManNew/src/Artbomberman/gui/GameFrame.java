@@ -3,29 +3,17 @@ package Artbomberman.gui;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
-import Artbomberman.logic.Color;
-import Artbomberman.logic.Gmanager;
-import Artbomberman.logic.Player;
-import Artbomberman.logic.Position;
-import Artbomberman.logic.World;
 
 public class GameFrame extends JFrame {
 
 	private static final int HEIGHT = 1080, WIDTH = 1920;
 	
-	
-	
-	
 	private GamePanel gamepanel;
 	
-	private ArrayList<Player> players=new ArrayList<Player>();
-	
-	private World world;
 	
 	public GameFrame() {
 		this.setSize(WIDTH,HEIGHT);
@@ -41,15 +29,14 @@ public class GameFrame extends JFrame {
 		this.setVisible(true);
 	
 	
-	this.addWindowListener (new WindowAdapter () {
+	this.addWindowListener (new WindowAdapter () {		
 		public void windowClosing (WindowEvent e) {
 			if(gamepanel.multiplayer)
 			 {
-				gamepanel.closeSocket();
+				gamepanel.closeSocket();			//SE SI VERIFICA LA CHIUSURA DELLA FINESTRA E SIAMO IN MULTIPLAYER CHIUDIAMO I CANALI DI COMUNICAZIONE
 			 }
 	  }
 	  });
-	
 	}
 	
 	

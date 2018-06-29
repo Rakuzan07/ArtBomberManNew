@@ -18,7 +18,6 @@ public class Client implements Runnable{
 	
 	
 	public void run() {
-		
 		try {
 			client=new Socket("localHost",63789);
 			in=new DataInputStream(client.getInputStream());

@@ -56,7 +56,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	
 	private int NumWorld;
 
-	private int contUpdate = NUM_STEP - 1, update = NUM_STEP - 1, contMovement = 0;
+	private int contUpdate = NUM_STEP - 1;
 
 	private boolean isPressed = false;
 
@@ -460,6 +460,15 @@ public class GamePanel extends JPanel implements KeyListener {
 							{
 								GamePanel.this.closeSocket();
 							}
+							else if(isServer && server!=null)
+							{
+								isServer=false;
+								server.close();
+							}
+							else if(isClient)
+							{
+								isClient=false;
+							}
 						}
 				}
 
@@ -781,7 +790,6 @@ public class GamePanel extends JPanel implements KeyListener {
 		
 		if(!client.isConnected())
 		{
-			//DISEGNA IMMAGINE WAITING
 			contForWaiting=contForWaiting+1;
 			g.drawImage(waitingFriend1,DIM_ASSET *21, DIM_ASSET*12, this);
 			
@@ -1772,6 +1780,10 @@ public class GamePanel extends JPanel implements KeyListener {
 				checkConnection=false;
 				multiplayer=false;
 				server.setConnected(false);
+			}
+		else if(server!=null)
+			{
+				
 			}
 	}
 }

@@ -13,7 +13,7 @@ import Artbomberman.logic.Player.Status;
 
 public class World {
 
-	private Block[][] blockMatrix;
+	private Block[][] blockMatrix; //MATRICE DI BLOCCHI
 
 	private ArrayList<Player> players;
 
@@ -67,7 +67,7 @@ public class World {
 			p.reloadTank();
 	}
 	
-	public boolean checkColor(Color c) {
+	public boolean checkColor(Color c) { //CONTROLLA SE VI è UNA CASELLA DELLO STESSO COLORE PASSATO COME PARAMETRO
 		for (int i=0;i<dimWorld;i++) {
 			for (int j=0;j<dimWorld;j++) {
 				if(blockMatrix[i][j].equals(c)) return true;
@@ -245,7 +245,7 @@ public class World {
 		return posBombs.size();
 	}
 
-	private ArrayList<Position> tryExplosion(Position bomb, int nx, int ny) { //SIMULA L'ESPLOSIONE DI UNA BOMBA
+	private ArrayList<Position> tryExplosion(Position bomb, int nx, int ny) { //SIMULA L'ESPLOSIONE DI UNA BOMBA UTILE PER DETERMINARE L'EFFICACIA DI UN'ESPLOSIONE
 		ArrayList<Position> tempPosition = new ArrayList<Position>();
 		int x = bomb.getX();
 		int y = bomb.getY();

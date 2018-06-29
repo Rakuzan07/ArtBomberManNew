@@ -20,7 +20,6 @@ public class Gmanager {
 	private Player playerOneMulti;
 	private PlayerManager playerOneManager;
 	
-	private Player winningPlayer;
 
 	public Gmanager(ArrayList<Player> players, World world) {
 		this.players = players;

@@ -15,10 +15,6 @@ public class PlayerManager {
 
 	private ArrayList<Position> bombPosition;
 
-	private static final int SHIFT = 5;
-
-	private ArrayList<Integer> tempTarget = new ArrayList<Integer>();
-
 	private ArrayList<Position> way = new ArrayList<Position>(); // ARRAY DI POSIZIONI CHE IL NEMICO DEVE PERCORRERE
 
 	private Position tempPos = null;
@@ -27,11 +23,10 @@ public class PlayerManager {
 
 	private boolean checkPosition = false; //BOOLEANA CHE DICE SE TROV
 
-	private boolean inkFocussed = false, targetFocussed = false;
+	private boolean inkFocussed = false;
 
 	private double cont = 0;
 
-	private int indexTarget, posxTarget, posyTarget;
 
 	public PlayerManager(Player player, World world) {
 		this.player = player;
