@@ -84,4 +84,8 @@ public class Server implements Runnable{
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean isClosed() {
+		return server.isClosed();
+	}
 }

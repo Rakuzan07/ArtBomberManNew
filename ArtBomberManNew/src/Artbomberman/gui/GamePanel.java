@@ -69,7 +69,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			major, one, two, three, zero, five, gameOver, win, home, oneRed, twoRed, threeRed, zeroRed, fourRed,
 			bombText,join,inviteFriends,waitingFriend1,waitingFriend2,waitingFriend3,waitingFriend4;
 
-	private static final int SHIFT_PLAY = 2, SHIFT_EDITOR = 3,SHIFT_JOIN=4,SHIFT_INVITE=5, TABLE_EDITOR = 7, BLUE = 0, GREEN = 1, RED = 2;
+	private static final int SHIFT_PLAY = 2, SHIFT_EDITOR = 3,SHIFT_JOIN=4,SHIFT_INVITE=5,SHIFT=15 , TABLE_EDITOR = 7, BLUE = 0, GREEN = 1, RED = 2;
 
 	private static final int ENTER_KEY = 10, RIGHT_KEY = 39, LEFT_KEY = 37, UP_KEY = 38, DOWN_KEY = 40, ESC_KEY = 27,
 			BOMB_KEY = 32;
@@ -312,7 +312,7 @@ public class GamePanel extends JPanel implements KeyListener {
 					
 					
 					
-					if(x>=joinX && x<=(joinX + join.getWidth(GamePanel.this)) && y>=joinY && y<=(joinY+join.getHeight(GamePanel.this))){
+					if(x>=joinX && x<=(joinX + join.getWidth(GamePanel.this)) && y>=joinY+ SHIFT*2 && y<=(joinY+join.getHeight(GamePanel.this))){
 						
 						screenStatus=JOIN_SCREEN;
 						isClient=true;
@@ -321,7 +321,7 @@ public class GamePanel extends JPanel implements KeyListener {
 						winningPlayer=null;
 					}
 					
-					if(x>=inviteX && x<=(inviteX + inviteFriends.getWidth(GamePanel.this)) && y>=inviteY && y<=(inviteY+inviteFriends.getHeight(GamePanel.this))){
+					if(x>=inviteX && x<=(inviteX + inviteFriends.getWidth(GamePanel.this)) && y>=inviteY+ SHIFT*3 && y<=(inviteY+inviteFriends.getHeight(GamePanel.this))){
 						screenStatus=SELECT_WORLD_SCREEN;
 						isServer=true;
 						winningPlayer=null;
@@ -329,8 +329,8 @@ public class GamePanel extends JPanel implements KeyListener {
 					
 					
 					
-					if (x >= editorX && x <= (editorX + play.getWidth(GamePanel.this)) && y >= editorY
-							&& y <= editorY + play.getHeight(GamePanel.this)) {
+					if (x >= editorX && x <= (editorX + editor.getWidth(GamePanel.this)) && y >= editorY+ SHIFT
+							&& y <= editorY + editor.getHeight(GamePanel.this)) {
 						screenStatus = EDITOR_SCREEN;
 						editorTitle = tk.getImage(this.getClass().getResource("var//editor.png"));
 						backGroundEditor = tk.getImage(this.getClass().getResource("block//editor_table.png"));
