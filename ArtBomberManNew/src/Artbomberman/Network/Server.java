@@ -61,6 +61,8 @@ public class Server implements Runnable{
 	public void sendNumWorld(int NumWorld) {
 		try {
 			out.writeInt(NumWorld);
+			out.flush();
+			
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -68,5 +70,18 @@ public class Server implements Runnable{
 	
 	public boolean isConnected() {
 		return connected;
+	}
+	
+	public void setConnected(boolean connected) {
+		this.connected=connected;
+	}
+	
+	public void close() {
+		try {
+			server.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -23,8 +23,8 @@ public class Client implements Runnable{
 			client=new Socket("localHost",63789);
 			in=new DataInputStream(client.getInputStream());
 			out=new DataOutputStream(client.getOutputStream());
-			connected=true;
 			NumWorld=in.readInt();
+			connected=true;
 		} catch (IOException e) {
 			serverNotFounded=true;
 		}
@@ -57,6 +57,19 @@ public class Client implements Runnable{
 	
 	public boolean isConnected() {
 		return connected;
+	}
+	
+	public void close() {
+		try {
+			client.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void setConnected(boolean connected) {
+		this.connected=connected;
 	}
 
 

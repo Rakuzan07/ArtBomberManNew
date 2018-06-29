@@ -1,5 +1,7 @@
 package Artbomberman.gui;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -37,5 +39,18 @@ public class GameFrame extends JFrame {
 		this.addKeyListener(gamepanel);
 		this.gamepanel.setVisible(true);
 		this.setVisible(true);
+	
+	
+	this.addWindowListener (new WindowAdapter () {
+		public void windowClosing (WindowEvent e) {
+			if(gamepanel.multiplayer)
+			 {
+				gamepanel.closeSocket();
+			 }
+	  }
+	  });
+	
 	}
+	
+	
 }

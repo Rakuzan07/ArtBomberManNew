@@ -7,6 +7,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
@@ -113,6 +115,7 @@ public class GamePanel extends JPanel implements KeyListener {
 	private boolean isClient=false;
 	private boolean checkConnection=false;
 	private boolean movingMultiPlayer=false;
+    boolean multiplayer=false;
 
 	private int blockX, blockY;
 	private Random random = new Random();
@@ -443,7 +446,7 @@ public class GamePanel extends JPanel implements KeyListener {
 
 				}
 
-				if (screenStatus == PLAY_SCREEN) {
+				if (screenStatus == PLAY_SCREEN || screenStatus==JOIN_SCREEN || screenStatus==INVITEFRIEND_SCREEN) {
 					int homeX = 22 * DIM_ASSET;
 					int homeY = 2 * DIM_ASSET;
 					if (x >= homeX && x <= (homeX + home.getWidth(GamePanel.this)) && y >= homeY
@@ -751,8 +754,17 @@ public class GamePanel extends JPanel implements KeyListener {
 		if(!client.isConnected())
 		{
 			//DISEGNA IMMAGINE WAITING
-			g.drawImage(waitingFriend1,DIM_ASSET, DIM_ASSET, this);
+			contForWaiting=contForWaiting+1;
+			g.drawImage(waitingFriend1,DIM_ASSET *21, DIM_ASSET*12, this);
 			
+			if(contForWaiting>15 && contForWaiting<30 )
+			g.drawImage(waitingFriend2,DIM_ASSET *21, DIM_ASSET*12, this);
+			else if(contForWaiting>=30 && contForWaiting<45)
+			g.drawImage(waitingFriend3,DIM_ASSET *21, DIM_ASSET*12, this);
+			else if(contForWaiting>=45 && contForWaiting<60)
+			g.drawImage(waitingFriend4,DIM_ASSET *21, DIM_ASSET*12, this);
+			else if(contForWaiting>=60)
+			contForWaiting=0;
 		}
 		else if(!checkConnection && client.isConnected())
 		{
@@ -760,6 +772,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			loadWorld(NumWorld);
 			client.sendMessage("ciao");
 			checkConnection=true;
+			multiplayer=true;
 		}
 
 		else {
@@ -818,7 +831,6 @@ public class GamePanel extends JPanel implements KeyListener {
 			 
 		}
 		
-		
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
 		
@@ -849,13 +861,23 @@ public class GamePanel extends JPanel implements KeyListener {
 			playersMulti.get(0).placeBomb(playersMulti.get(0).getPosition());
 			client.sendMessage("PLACEBOMBE");
 			keyPressed = 0;
-			isPressed = false;
+			//isPressed = false;
 		}
 		
 		
 		client.readMessage();
 
 		messageByServer=client.getMessage();
+		
+		if(messageByServer.equals("CLOSING"))
+		{
+			client.close();
+			screenStatus=DEMO_SCREEN;
+			isClient=false;
+			checkConnection=false;
+			multiplayer=false;
+			client.setConnected(false);
+		}
 
 		
 		if(movingMultiPlayer)
@@ -903,6 +925,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		drawPlayerPercentual(playersMulti.get(1), 3, 5, g);
 		
 		drawBombText(playersMulti.get(0), 1, 9, g);
+		
 		if (winningPlayer != null) {
 			if (winningPlayer.equals(playersMulti.get(0)))
 				g.drawImage(win, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
@@ -941,7 +964,19 @@ public class GamePanel extends JPanel implements KeyListener {
 		}
 		
 		if(!server.isConnected()) {
-			//DISEGNA L'IMMAGINE DI LOADING
+			
+			contForWaiting=contForWaiting+1;
+			g.drawImage(waitingFriend1,DIM_ASSET *21, DIM_ASSET*12, this);
+			
+			if(contForWaiting>15 && contForWaiting<30 )
+			g.drawImage(waitingFriend2,DIM_ASSET *21, DIM_ASSET*12, this);
+			else if(contForWaiting>=30 && contForWaiting<45)
+			g.drawImage(waitingFriend3,DIM_ASSET *21, DIM_ASSET*12, this);
+			else if(contForWaiting>=45 && contForWaiting<60)
+			g.drawImage(waitingFriend4,DIM_ASSET *21, DIM_ASSET*12, this);
+			else if(contForWaiting>=60)
+			contForWaiting=0;
+			
 		}
 		else if(server.isConnected() && !checkConnection)
 		{
@@ -949,6 +984,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			server.readMessage();
 			messageByClient=server.getMessage();
 			checkConnection=true;
+			multiplayer=true;
 		}
 		else {
 		int shiftWidth = (this.getWidth() - (64 * world.getDimension())) / 2;
@@ -992,7 +1028,18 @@ public class GamePanel extends JPanel implements KeyListener {
 			}
 		}
 		
+		server.readMessage();
+		messageByClient=server.getMessage();
 		
+		if(messageByClient.equals("CLOSING"))
+		{
+			server.close();
+			screenStatus=DEMO_SCREEN;
+			isServer=false;
+			checkConnection=false;
+			multiplayer=false;
+			server.setConnected(false);
+		}
 		
 		
 		if (contPlayerOne == NUM_STEP) {
@@ -1007,7 +1054,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			movingMultiPlayer=false;
 		}
 		
-		
+	
 		
 		if (isPressed)
 			contPlayerOne= (contPlayerOne + 1);
@@ -1015,38 +1062,45 @@ public class GamePanel extends JPanel implements KeyListener {
 		if(keyPressed==0)
 			server.sendMessage("");
 		
+	
+		
 		if (keyPressed == LEFT_KEY) {
 			Gmanager.tryToMoveLeft(playersMulti.get(0));
 			server.sendMessage("GOINGLEFT");
 			keyPressed = 0;
+
 		}
 		
 		if (keyPressed == RIGHT_KEY) {
 			Gmanager.tryToMoveRight(playersMulti.get(0));
 			server.sendMessage("GOINGRIGHT");
 			keyPressed = 0;
+
 		}
 		if (keyPressed == UP_KEY) {
 			Gmanager.tryToMoveUp(playersMulti.get(0));
 			server.sendMessage("GOINGUP");
 			keyPressed = 0;
+
 		}
 		if (keyPressed == DOWN_KEY) {
 			Gmanager.tryToMoveDown(playersMulti.get(0));
 			server.sendMessage("GOINGDOWN");
 			keyPressed = 0;
+
 		}
 		if (keyPressed == BOMB_KEY) {
 			playersMulti.get(0).placeBomb(playersMulti.get(0).getPosition());
 			server.sendMessage("PLACEBOMBE");
 			keyPressed = 0;
-			isPressed = false;
+			//isPressed = false;
 		}
 		
+	
 		
 		
-		server.readMessage();
-		messageByClient=server.getMessage();
+		
+	
 
 	
 		if(movingMultiPlayer)
@@ -1097,12 +1151,13 @@ public class GamePanel extends JPanel implements KeyListener {
 		drawPlayerPercentual(playersMulti.get(1), 3, 5, g);
 		
 		drawBombText(playersMulti.get(0), 1, 9, g);
+		
 		if (winningPlayer != null) {
 			if (winningPlayer.equals(playersMulti.get(0)))
 				g.drawImage(win, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
-						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
-			else
-				g.drawImage(gameOver, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
+						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this)  ;
+			else   
+    	 	       	 	 g . drawImage(gameOver, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
 						((int) (world.getDimension() / 2 + Math.ceil((double) shiftHeight / 64))) * DIM_ASSET, this);
 		}
 		
@@ -1230,6 +1285,7 @@ public class GamePanel extends JPanel implements KeyListener {
 		drawPlayerPercentual(players.get(1), 3, 5, g);
 		drawPlayerPercentual(players.get(2), 3, 7, g);
 		drawBombText(players.get(2), 1, 9, g);
+		
 		if (winningPlayer != null) {
 			if (winningPlayer.equals(players.get(2)))
 				g.drawImage(win, (((world.getDimension() / 4) + (shiftWidth / 64)) * DIM_ASSET) + 32,
@@ -1648,5 +1704,19 @@ public class GamePanel extends JPanel implements KeyListener {
 
 	public void keyTyped(KeyEvent e) {
 
+	}
+	
+	
+	public void closeSocket() {
+		if(multiplayer && isClient)
+			{
+				client.sendMessage("CLOSING");
+				client.close();
+			}
+		else if(multiplayer && isServer)
+			{
+				server.sendMessage("CLOSING");
+				server.close();
+			}
 	}
 }
