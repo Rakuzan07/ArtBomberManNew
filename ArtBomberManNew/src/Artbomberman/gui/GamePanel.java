@@ -793,6 +793,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			g.drawImage(waitingFriend4,DIM_ASSET *21, DIM_ASSET*12, this);
 			else if(contForWaiting>=60)
 			contForWaiting=0;
+			g.drawImage(home, 22 * DIM_ASSET, 2 * DIM_ASSET, this);
 		}
 		else if(!checkConnection && client.isConnected())
 		{
@@ -1005,7 +1006,7 @@ public class GamePanel extends JPanel implements KeyListener {
 			g.drawImage(waitingFriend4,DIM_ASSET *21, DIM_ASSET*12, this);
 			else if(contForWaiting>=60)
 			contForWaiting=0;
-			
+			g.drawImage(home, 22 * DIM_ASSET, 2 * DIM_ASSET, this);
 		}
 		else if(server.isConnected() && !checkConnection)
 		{
